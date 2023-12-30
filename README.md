@@ -28,7 +28,7 @@ python -m ipykernel install --user --name <env_name> --display-name <env_name>
 
 # Content
 This repository provides code for reproducing experiments that were performed as part of scientific work in the fall semester of 2023.
-If you run AdamVarious.ipynb in the mush_src directory, you will reproduce the experimental results obtained in the article. Namely, the difference in the rate of convergence for preconditioned methods. Also in optim_fancy.py Experiments on working with optimization methods with preconditioning and coordinate-wise are presented. You can run experemines.ipynb to reproduce the results about the dependence of the distribution of weights in different layers in a convolutional neural network for optimization methods with preconditioning and weight decaying.
+If you run demo.ipynb in the code directory, you will reproduce the experimental results obtained in the article. Namely, the difference in the rate of convergence for preconditioned methods. Also in optim_fancy.py Experiments on working with optimization methods with preconditioning and coordinate-wise are presented. You can run experemines.ipynb to reproduce the results about the dependence of the distribution of weights in different layers in a convolutional neural network for optimization methods with preconditioning and weight decaying.
 
 ![AdamW convergency](./code/example1.png)
 
