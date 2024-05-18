@@ -1,0 +1,190 @@
+\subsection{Скорость сходимости методов с предобуславливанием и затуханием весов}
+
+Давайте попробуем оценить скорость сходимости методов с предобуславливанием и затуханием весов. 
+
+Хотя шаг оптимизации весов модели может показаться простым, он может быть рассмотрен с другой стороны. Давайте вынесем матрицу $D_t^{-1}$ за скобки, что даёт нам следующий шаг:
+
+\begin{equation}
+w_{t+1} = w_t - \eta \cdot D_t^{-1} (\nabla f(w_t) + D_t \nabla r(w_t)).
+\end{equation}
+
+Это подталкивает нас к тому, чтобы вести новую функцию $\tilde{r}$, такую, что $\nabla \tilde{r}_t(w) = D_t \nabla r(w)$ и новую целевую функцию
+\begin{equation} \label{F_tilde}
+    \tilde{F_t}(w) := f(w) + \tilde{r}_t(w),
+\end{equation}
+, где новая целевая функция $\widetilde{F}_t$ меняется на каждом оптимизационном шаге, так как $D_t$ тоже обновляется на каждом оптимизационном шаге.
+
+Новый адаптивный регуляризатор $\widetilde{r}_t$ в общем случае к сожалению не существует. Поэтому мы наложим ограничения на начальный регуляризатор и структуру предобусловливателя, которые будут оформлены в виде следующих предположений на функцию регуляризации.
+
+\begin{assumption}{(Структура регулязитора)}
+    \label{ass:regstruct}
+    Регуляризатор $r$ сепарабелен, то есть он может быть представлен в следующем виде:
+    $$r(w) = \sum_{i=1}^d r_i(w^i),$$
+    где $r_i(x) \ge 0$ для $i \in \overline{1, d}$ и $x \in \mathbb{R}$.
+\end{assumption}
+
+\begin{assumption}{(Структура матрицы предобуславливания)}
+    \label{ass:precondstruct}
+    Матрица предобуславливания $D_t$ может быть представлена в следующем виде:
+    $$ D_t = \textrm{diag} \left\{ d_t^1 \ldots, d
+_t^d \right\}.$$
+\end{assumption}
+
+Хотя эти предположения являются достаточно сильными, но они выполняются для упомянутых ранее методов с предобуславливанием и затуханием весов, также это верно для таких популярных функций регуляризации как регуляризация Тиханова и LASSO регуляризация. 
+Скорость сходимости обычно исчисляется количеством итераций, которые необходимы для достижения определенного уровня погрешности. Чтобы получить оценки количества итераций, необходимых для сходимости к заданной ошибке, мы должны наложить определенные предположения на оптимизируемую функцию потерь. На протяжении всего последующего анализа я предполагаю, что $f : \mathbb{R}^d \rightarrow \mathbb{R}$ является $L-$ гладким и дважды дифференцируемым.
+
+\begin{assumption}{($L$-гладкость)} 
+\label{ass:smoothness}
+\begin{itemize}
+    \item 	Градиент функции $f$ является $L_f$-гладким, то есть существует такая константа $L_f > 0$ такая, что $\forall x, y \in \mathbb{R}^d$,
+    	\begin{equation*}
+    		f(x) \leq f(y) + \langle \nabla f(y), x-y \rangle + \frac{L_f}{2} \|x - y\|^2.
+    	\end{equation*}
+    \item    Градиент функции $r$ является $L_r$-гладким, то есть существует такая константа $L_r > 0$ такая, что $\forall x, y \in \mathbb{R}^d$,
+	\begin{equation*}
+		r(x) \leq r(y) + \langle \nabla r(y), x-y \rangle + \frac{L_r}{2} ||x - y||^2.
+	\end{equation*}
+\end{itemize}
+\end{assumption}
+
+Для того чтобы работать в невыпуклом случае, необходимо ввести ограничение на значения функции регуляризации, это описано в \ref{ass:regbound}.
+
+\begin{assumption}{(Ограниченность регуляризатора)}
+\label{ass:regbound}
+Регуляризатор ограничен, то есть существует константа $\Omega > 0$ такая, что $\forall w \in \mathbb{R}^d$ 
+\begin{equation*}
+|r(w)| \le \Omega.
+\end{equation*}
+\end{assumption}
+
+Мы используем обычное ограничение на матрицу предобуславливания, которое сформулировано в предположении \ref{ass:preconditioned}.
+
+\begin{assumption}{(Ограниченность предобуславливателя)}
+\label{ass:preconditioned}
+Существуют константы $\alpha, \Gamma \in \mathbb{R} : 0 < \alpha < \Gamma$ такие, что
+\begin{equation*}
+\alpha I \preccurlyeq D_t \preccurlyeq \Gamma I \Leftrightarrow \frac{I}{\Gamma} \preccurlyeq D_t^{-1} \preccurlyeq \frac{I}{\alpha}.
+\end{equation*}
+\end{assumption}
+
+Это было доказано в \citep{beznosikov2022scaled}, что это предположение справедливо для всех современных и популярных алгоритмов с предобуславливанием, таких как Adam, Adagrad, OASIS.
+
+
+В нашем анализе мы рассматриваем два способа обновления матрицы предобуславливания.
+В первом методе матрица обновляется через квадраты:
+\begin{equation}
+\label{eq:squares}
+    (D_{t+1})^2 = \beta (D_t)^2 + (1 - \beta) (H_t)^2,
+\end{equation}
+, где $H_t$ - матрица, содержащая новую информацию, а $\beta \ в [0, 1]$ - параметр импульса.
+Этот подход используется в Adam, а также в более старых методах, таких как RMSProp и AdaHessian.
+Второй способ является более современным и предполагает использование первых степеней матриц, сохраняя форму преобразования
+\begin{equation}
+\label{eq:linear}
+    D_{t+1} = \beta D_t + (1 - \beta) H_t,
+\end{equation}
+
+Этот подход используется в OASIS, недавно придуманным методом. В обеих случаях параметр импульса $\beta$ обычно подбирается близким к 1, что означает, что $D_t$ незначительно меняется в ходе обучения, что может быть формально сформулировано в лемме \ref{lemma:Dt}.
+
+Выполнение предположения \ref{ass:preconditioned} имеет решающее значение для сходимости и теоретического анализа, и поэтому в алгоритмах часто используется метод императивного выбора для нижней границы матрицы $D_t$
+\begin{equation}
+\label{eq:alpha}
+    \hat{D}_{t+1}^{ii} = \max \{ \alpha, D_t^{ii} \}.
+\end{equation}
+
+
+\begin{lemma}
+\label{lemma:Dt}
+{(Эволюция $D_t$, Безносиков)}
+    Предположим, что для начальной матрицы $D_0$ выполнены предположения \ref{ass:precondstruct} и \ref{ass:preconditioned}, $H_t$ диагональна с максимальным значением меньше или равным $\Gamma$ на каждом временном шаге $t$, и $D_t$ эволюционирует в соответствии с \eqref{eq:squares}, \eqref{eq:alpha} или 
+    \eqref{eq:linear}, \eqref{eq:alpha},  тогда справедливы следующие утверждения:
+    
+    \begin{enumerate}
+        \item \ref{ass:precondstruct} и \ref{ass:preconditioned} выполняется для $\hat{D}_t$ для всех $t$;
+        \item $||\hat{D}_{t+1} - \hat{D}_t||_\infty \le \frac{(1 - \beta) \Gamma^2}{2\alpha}$ for \eqref{eq:squares};
+        \item $||\hat{D}_{t+1} - \hat{D}_t||_\infty \le 2(1 - \beta) \Gamma$ for \eqref{eq:linear}.
+    \end{enumerate}
+\end{lemma}
+
+Эта лемма доказана в \ref{Приложение:lemmas}, где мы опираемся на \cite{beznosikov2022scaled}.
+
+Чтобы проводить стохастический анализ, мы должны включить ограничения на стохастический градиент функции.
+Это формализуется в следующем предположении 
+
+\begin{assumption}{(Ожидания)}
+\label{ass:expectations}
+$g_t$ являются несмещенными и имеют ограниченную вариацию на любом шаге, то есть
+\begin{equation}
+\mathbb{E}\left[ g_t \right] = \nabla f (w_t), \mathbb{E}\left[ ||g_t - \nabla f||^2 \right] \leq \sigma^2.
+\end{equation}
+\end{assumption}
+
+Чтобы получить дополнительные оценки на сходимость методов с предобуславливанием и затуханием весов мы накладываем сильную выпуклость \ref{ass:muconvex}  на целевую функцию потерь.
+\begin{assumption}{(Сильная выпуклость)}
+    \label{ass:muconvex}
+    Сушествует $\mu_f$ такая, что $\forall x, y \in \mathbb{R}^d$ выполняется:
+    $$
+    f(y) \geq f(x) + \langle \nabla f(x), y-x \rangle + \frac{\mu_f}{2} ||x-y||_2^2
+    $$
+\end{assumption}
+
+С помощью предположений \ref{ass:regstruct} и \ref{ass:precondstruct} мы можем доказать существование $\widetilde{r}$ и, следовательно, $\widetilde{F}$. Мы оформим это в лемме \ref{lemma:existence}. Мы показываем только существование, но не единственность функции, но в наших оценках $\widetilde{F}$ может быть найдена до константы.
+
+\begin{lemma}
+\label{lemma:existence}
+{(Существование $\widetilde{r}$)}
+    Предполагая, что \ref{ass:regstruct}, \ref{ass:precondstruct} выполняются, функция $\widetilde{r}$ существует и имеет следующую форму:
+    $$\widetilde{r}_t(w) = \sum_{i=1}^d d_t^i r_i(w_i)$$
+\end{lemma}
+
+Используя введенное предположение \ref{ass:smoothness}, мы можем гарантировать гладкость для $\widetilde{r}$ и оценить его константу Липшица, что формально сформулировано и доказано в лемме \ref{lemma:tildesmoothness}.
+
+\begin{lemma}\label{lemma:tildesmoothness}{(L-гладкость $\widetilde{r}$)}
+Предполагая, что \ref{ass:regstruct}, \ref{ass:precondstruct}, \ref{ass:smoothness}, \ref{ass:preconditioned} выполняются,
+градиент $\widetilde{r}$ является $L_{\tilde{r}}$-непрерывным, 
+то есть существует константа  $L_{\tilde{r}} > 0$ такая, что $\forall x, y \in \mathbb{R}^d$,
+\begin{equation*}
+    		\widetilde{r}_t(x) \leq \widetilde{r}_t(y) + \langle \nabla \widetilde{r}_t(y), x-y \rangle + \frac{L_{\tilde{r}}}{2} ||x - y||^2,
+    	\end{equation*}
+     и $L_{\tilde{r}} = \Gamma L_r$.
+\end{lemma}
+
+Используя введенные предположения, мы доказали сходимость методов с предобусловливанием и затуханием в общем виде. Наши результаты оформлены в Теорему \ref{theor:1} и Теорему \ref{theor:2}. Доказательства теорем можно найти в Приложении \ref{appendix:theorems}.
+
+\begin{theorem} 
+    \label{theor:1}
+    Предполагая, что \ref{ass:regstruct}, \ref{ass:precondstruct}, \ref{ass:smoothness}, \ref{ass:regbound}, \ref{ass:preconditioned} выполняются, положим ошибку $\varepsilon > 0$ и шаг обучения удовлетворяют условию:
+    \begin{equation*}
+        \eta < \frac{2 \alpha}{L_f + \Gamma L_{r}},
+    \end{equation*}
+    где $L_f, L_{r}$ - константа Липшица функций $f$ и $r$. 
+    Пусть существует начальная матрица предобуславливания, которая обновляется в соответствии с условиями леммы \ref{lemma:Dt}.
+    Тогда количество итераций, выполняемых алгоритмами с предусловием и убывающим весом, начиная с начальной точки
+    $w_0 \in \mathbb{R}^d$ с $\Delta_0 = \tilde{F}_0(w_0) - f^*$, где $\widetilde{F}_t$ определено в \eqref{F_tilde} и $f^*$ решением задачи \eqref{eq:general}, 
+    необходимое для $\varepsilon$-приближения нормы градиента к 0, может быть ограничено количеством шагов    
+    \begin{equation*}
+      T = \mathcal{O}\left( \frac{\Delta_0 \Gamma}{(\eta - \frac{\tilde{L}\eta^2}{2\alpha}) \left( \varepsilon -\frac{\delta\Gamma}{\eta - \frac{\tilde{L}\eta^2}{2\alpha}}\right)} \right),
+\end{equation*}
+где $\widetilde{L} = L_f + \Gamma L_{r}$ и $\delta$ может выбрано сколь угодно малым с помощью выбора гиперпараметров $\alpha, \beta, \Gamma$
+\begin{enumerate}
+    \item $\delta=\frac{(1 - \beta)\Gamma^2}{2\alpha}$ for \eqref{eq:squares};
+    \item $\delta=2(1 - \beta)\Gamma$ for \eqref{eq:linear}.
+\end{enumerate}
+\end{theorem}
+
+\begin{theorem}
+\label{theor:2}
+    Преполагая, что \ref{ass:regstruct}, \ref{ass:precondstruct}, \ref{ass:smoothness}, \ref{ass:regbound}, \ref{ass:preconditioned}, \ref{ass:muconvex} выполняются, положим ошибку $\varepsilon > 0$ и шаг обучения удовлетворяют условию: $\eta < \frac{\alpha}{4L_f}$, гиперпараметры удовлетворяют условиям: $\lambda < \frac{\alpha \beta^2}{8L_f \Omega_0^2}$, $\beta \geq 1 - \frac{\eta(\mu_f + \lambda)\alpha}{2 \Gamma^2}$, $\Omega_0^2 \geq \frac{\alpha^2 \beta^2}{8L_f^2}$. Получаем оценку на необходимое количество шагов для сходимости алгоритма к заданной точности:$$
+T = \max \left\{ \log{\left( \frac{4 \varepsilon (1-\beta) L_f^2 }{\alpha \beta^2} \right)} \cdot \log{\frac{2}{1+\beta}} ;
+\frac{4}{\frac{\alpha}{4L_f} \left(\mu_f + \frac{\alpha \beta^2}{8L_f \Omega_0^2} \right)}\log{\left(\frac{2 ||w_0-w_*||_2^2}{\varepsilon} \right)} \right\}$$
+\end{theorem}
+
+Эти теоремы устанавливают сходимость методов с предобуславливанием и затуханием весов различных предположениях, а также определяют необходимое количество итераций для заданной точности. Для наших задач простой факт сходимости этих методов имеет огромное значение. 
+
+Однако характеристики решения $\widetilde{w}^*$ задачи
+\begin{equation} \label{F_tilde_problem}
+	\min_{w \ in \mathbb{R}^d} \tilde{F}(w) = f(w) + \tilde{r}(w),
+\end{equation}
+к которым сходится этот метод, требуют более глубокого исследования, которое будет рассмотрено в следующем разделе.
+
+

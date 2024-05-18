@@ -1,0 +1,371 @@
+\appendix
+\section{Приложение}
+
+\subsection{Доказательство лемм}
+Скоро будет перетехано с листочка...
+\if 0
+\label{appendix:lemmas}
+
+\begin{proof} (Proof of Lemma \ref{lemma:Dt})
+\begin{enumerate}
+    \item Because of \eqref{eq:alpha}, $\hat{D}_t$ is lower-bounded. Due to the form of updating the matrix in equations (8) and (9), it can be concluded that \ref{ass:precondstruct} holds through iterations and absolute value of diagonal elements of $D_t$ are upper-bounded after each update by induction, given the assumption of the boundedness of $H_t$.
+    \item We can bound norm of difference from above, using \eqref{eq:squares} and the fact that all matrices are diagonal
+    \begin{equation*}
+    \begin{aligned}
+    || \hat{D}_{t+1} - \hat{D}_t||_\infty \le || D_{t+1} - D_t||_\infty &=  || ((D_{t+1})^2 - (D_t)^2)(D_{t+1} + D_t)^{-1} ||_\infty \\
+    &\le (1 - \beta)|| ((H_t)^2 - (D_t)^2)(D_{t+1} + D_t)^{-1} ||_\infty \\
+    &\le (1 - \beta)\frac{\Gamma^2}{2\alpha}.
+    \end{aligned}
+    \end{equation*}
+    We have individually bounded each factor: $||(D_t)^2 - (H_t)^2||_\infty$ is bounded by $\Gamma^2$, since each of the diagonal elements of $(D_t)^2$ and $(H_t)^2$ is greater than 0 and less than $\Gamma^2$.
+    The second factor is bounded because both $D_{t+1}$ and $D_t$ are greater than or equal to $\alpha$, as proved in the first statement of this lemma, hence $$(D_{t+1} + D_t)^{-1} \preccurlyeq \frac{1}{2\alpha}.$$
+
+    \item We can bound norm of difference from above, using \eqref{eq:linear} similar to the proof of the second statement of this lemma
+    \begin{equation*}
+    || \hat{D}_{t+1} - \hat{D}_t||_\infty \le || D_{t+1} - D_t||_\infty \le (1 - \beta)|| H_t - D_t ||_\infty \le 2\Gamma (1 - \beta).
+    \end{equation*}
+    We use the first statement of this lemma about boundiness of diagonal elements.
+\end{enumerate}
+
+
+\end{proof}
+
+\begin{proof} (Proof of Lemma \ref{lemma:existence})
+
+Using assumptions \ref{ass:regstruct}, \ref{ass:precondstruct} we can write the gradient of $\widetilde{r}$
+    \begin{equation*}
+        \nabla \widetilde{r} = \nabla \left( \sum_{i=1}^d D_t^i r_i(w_i) \right) = D_t \begin{pmatrix}
+  r_1'(w_1) \\
+  \vdots  \\
+  r_d'(w_d)
+ \end{pmatrix} = D_t \nabla r
+    \end{equation*}
+\end{proof}
+
+\begin{proof} (Proof of Lemma \ref{lemma:tildesmoothness})
+
+We can write definition of smoothness, using Lemma \ref{lemma:existence} and then apply \ref{ass:smoothness} and \ref{ass:preconditioned}
+\begin{equation*}
+    || \nabla \widetilde{r}(x) - \nabla \widetilde{r}(y) || =
+    || \nabla \left( \sum_{i=1}^d D_t^i r_i(x_i) \right) - \nabla \left( \sum_{i=1}^d D_t^i r_i(y_i) \right) || =
+    ||D_t \left( \nabla r(x) - \nabla r(y) \right)|| \le  ||D_t|| L_r \le \Gamma L_r
+\end{equation*}
+\end{proof}
+
+\begin{proof} (Proof of lemma \ref{lemma:lowerbondF})
+
+    Lets write definitions of solutions $w^*$, $\widetilde{w}^*$:
+        \begin{equation*}
+        \begin{cases}
+            \nabla f (\widetilde{w}^*) + D_t \nabla r(\widetilde{w}^*) = 0\\
+            \nabla f (w^*) + \nabla r(w^*) = 0\\
+        \end{cases},
+        \end{equation*}
+        Then we are able to get lower bound from the definition of $L_F$-contentiousness of the function $F$.
+        \begin{equation*}
+        \|\widetilde{w}^* - w^* \| L_F \geq \| \nabla f (\widetilde{w}^*) + \nabla r(\widetilde{w}^*) - \nabla f (w^*) - \nabla r (w^*) \| \\
+        = \| - D_t \nabla r (\widetilde{w}^*) + \nabla r(\widetilde{w}^*) \|  = \| \nabla r (\widetilde{w}^*) (I - D_t)\|
+        \end{equation*}
+\end{proof}
+
+\subsection{Доказательства теорем}
+\label{appendix:theorems}
+
+\begin{proof} (Proof of \hyperref[theor:1]{theorem 1})
+\label{proof:theorem1}
+
+Let us use Assumption \eqref{ass:smoothness} for step $t$ and $t+1$:
+
+\begin{equation} \label{eq1}
+    f(w_{t+1}) \leq f(w_t) + \langle \nabla f(w_t), w_{t+1} - w_t \rangle + \frac{L_f}{2}||w_{t+1} - w_t ||^2,
+\end{equation}
+By the definition of our algorithm we have:
+\begin{equation*}
+w_{t+1} - w_t = -\eta D_t^{-1} \nabla f(w_t) - \eta \nabla r(w_t).
+\end{equation*}
+
+From the previous expression, we select the gradient of the function
+
+\begin{equation*}
+\nabla f(w_t) = \frac{1}{\eta} D_t(w_t - w_{t+1}) - D_t \nabla r(w_t),
+\end{equation*}
+
+replace $\nabla f(w_t)$ in \ref{eq1} and by Assumption \ref{ass:preconditioned}, $I \preccurlyeq \frac{D_t}{\alpha}$
+\begin{equation*}
+    f(w_{t+1}) \leq f(w_t) + \langle \frac{1}{\eta}D_t(w_t - w_{t+1}) - D_t\nabla r(w_t), w_{t+1} - w_t \rangle + \frac{L_f}{2 \alpha} ||w_{t+1} - w_t||_{D_t}^2 = 
+\end{equation*}
+
+\begin{equation*}
+    = f(w_t) + \left(\frac{L_f}{2 \alpha} - \frac{1}{\eta} \right) ||w_{t+1} - w_t||_{D_t}^2 - \langle D_t \nabla r(w_t), w_{t+1} - w_t \rangle,
+\end{equation*}
+
+using the notation of $\widetilde{r}_t : \nabla \widetilde{r}_t = D_t \nabla r(w_t)$,
+we can rewrite step using the variable and Assumption \eqref{ass:smoothness}
+\begin{equation*}
+    \widetilde{r}(w_{t+1}) \leq \widetilde{r}(w_t) + \langle \nabla \widetilde{r}(w_t), w_{t+1} - w_t \rangle + \frac{L_{\tilde{r}}}{2} ||w_{t+1} - w_t||_2^2.
+\end{equation*}
+
+Let us replace the old regularization function with a new one
+
+\begin{equation*}
+    f(w_{t+1}) \leq f(w_t) + \left( \frac{L_f}{2\alpha} - \frac{1}{\eta} \right) ||w_{t+1} - w_t||_{D_t}^2 + \tilde{r}(w_t) - \tilde{r}(w_{t+1}) + \frac{\Gamma L_{\tilde{r}}}{2}||w_{t+1}-w_t||_{D_t}^2.
+\end{equation*}
+
+Now let us define a new loss function
+$\widetilde{F}_t(w) := f(w) + \tilde{r}_t(w)$, ($\tilde{L}=L_f + \Gamma L_{r}$), we get:
+
+\begin{equation*}
+    \widetilde{F}_t(w_{t+1}) \leq \widetilde{F}_t(w_t) + \left( \frac{\widetilde{L}}{2\alpha} - \frac{1}{\eta}  \right) ||w_{t+1} - w_t||_{D_t}^2,
+\end{equation*}
+
+we select the step in such way that $ \frac{\tilde{L}}{2\alpha} - \frac{1}{\eta} < 0 \Leftrightarrow \eta < \frac{2 \alpha}{\tilde{L}}$
+\begin{equation}
+\label{eq:theor1}
+    \left(\frac{1}{\eta} - \frac{\tilde{L}}{2\alpha}   \right) ||w_{t+1} - w_t||_{D_t}^2 \leq \tilde{F}_t(w_t) - \tilde{F}_t(w_{t+1}).
+\end{equation}
+
+Then let us notice that according to algorithm
+\begin{equation*}
+\begin{aligned}
+    ||w_{t+1} - w_t||^2_{D_t} &= ||-\eta D_t^{-1} \nabla f(w_t) - \eta \nabla r(w_t)||_{D_t}^2 \\
+    &= \eta^2 || D_t^{-1} 
+    ( \nabla f(w_t) + \nabla \widetilde{r}_t(w_t) ) ||_{D_t}^2 \\
+    &= \eta^2  ( \nabla f(w_t) + \nabla \widetilde{r}_t(w_t))^T D_t^{-1} D_t  D_t^{-1} 
+    ( \nabla f(w_t) + \nabla \widetilde{r}_t(w_t) ) \\
+    &\ge \frac{\eta^2}{\Gamma} || \nabla f(w_t) + \nabla \widetilde{r}_t(w_t) ||^2 = \frac{\eta^2}{\Gamma} ||\nabla\widetilde{F}_t(w_t)||^2
+\end{aligned}
+\end{equation*}
+and replace $||w_{t+1} - w_t||^2_{D_t}$ in \eqref{eq:theor1} with the previous equation and get
+
+\begin{equation}
+\label{eq:theor1-1}
+    \left(\frac{1}{\eta} - \frac{\tilde{L}}{2\alpha}   \right) \frac{\eta^2}{\Gamma} || \nabla\widetilde{F}_t(w_t) ||^2 \leq \tilde{F}_t(w_t) - \tilde{F}_t(w_{t+1}).
+\end{equation}
+
+In order to obtain telescopic equation, we bound norm of difference of the $\tilde{F}_{t+1}$ and $\tilde{F}_t$ with equal variables $w$:
+\begin{equation*}
+\begin{aligned}
+    | \widetilde{F}_{t+1}(w) - \widetilde{F}_{t}(w)| = |\widetilde{r}_{t+1}(w) - \widetilde{r}_t(w) | &= \left|\sum\limits_{i=0}^d (d_{t+1}^i - d^i_t)r_i(w^i) \right|
+    \le \sum\limits_{i=0}^d |d_{t+1}^i - d^i_t| r_i(w^i) \\
+    &\leq ||D_{t+1} - D_t||_\infty |r(w)| \leq \Omega ||D_{t+1} - D_t||_\infty,
+\end{aligned}
+\end{equation*}
+where we use Assumption \ref{ass:regstruct} and Assumption \ref{ass:regbound}.
+
+Then we need to estimate $| \widetilde{F}_{t+1}(w) - \widetilde{F}_{t}(w)|$ using Lemma \ref{lemma:Dt}.
+We bound the last equation with $\delta$ and specify $\delta$ for cases \eqref{eq:squares} and \eqref{eq:linear}
+\begin{equation}
+\label{eq:Ft+1-Ft}
+| \widetilde{F}_{t+1}(w) - \widetilde{F}_{t}(w)| \le \Omega ||D_{t+1} - D_t||_\infty \le \delta,
+\end{equation}
+where $\delta = \begin{cases}
+    \frac{(1 - \beta)\Gamma^2}{2\alpha}\Omega & \text{for } \eqref{eq:squares} \\
+    2(1 - \beta)\Gamma\Omega  &  \text{for } \eqref{eq:linear}
+\end{cases}.$
+
+Now we can estimate the following difference using \eqref{eq:theor1-1} and \eqref{eq:Ft+1-Ft}
+\begin{equation*}
+\begin{aligned}
+\widetilde{F}_t(w_t) - \widetilde{F}_{t+1}(w_{t+1}) &= \widetilde{F}_t(w_t) - \widetilde{F}_{t}(w_{t+1}) + \widetilde{F}_{t}(w_{t+1}) - \widetilde{F}_{t+1}(w_{t+1}) \\ 
+&\ge \left(\frac{1}{\eta} - \frac{\tilde{L}}{2\alpha}   \right) \frac{\eta^2}{\Gamma} || \nabla\widetilde{F}_t(w_t) ||^2 - \delta,
+\end{aligned}
+\end{equation*}
+and rewrite
+\begin{equation*}
+ \left(\frac{1}{\eta} - \frac{\tilde{L}}{2\alpha}   \right) \frac{\eta^2}{\Gamma} || \nabla\widetilde{F}_t(w_t) ||^2 \le \widetilde{F}_t(w_t) - \widetilde{F}_{t+1}(w_{t+1}) + \delta.
+\end{equation*}
+Now we sum over all iterations of the previous expression
+\begin{equation*}
+    \frac{\eta^2  (T+1)}{\Gamma}\left(\frac{1}{\eta} - \frac{\tilde{L}}{2\alpha}   \right)\cdot\min_{t \in \overline{0, T}} ||\nabla\widetilde{F}_t(w_t)||^2 \leq \frac{\eta^2}{\Gamma}\left(\frac{1}{\eta} - \frac{\tilde{L}}{2\alpha}   \right)\cdot\sum\limits_{t = 0}^T ||\nabla\widetilde{F}_t(w_t)||^2
+\end{equation*}
+\begin{equation*}
+    \leq \tilde{F}(w_0) - \tilde{F}^* + \delta \cdot (T+1)
+\end{equation*}
+
+Moving everything to the right we get the following estimation
+
+\begin{equation*}
+    \min_{t \in \overline{0, T}} ||\nabla f(w_t) + \nabla \tilde{r}(w_t)||^2 \leq \frac{(\tilde{F}(w_0) - \tilde{F}(w_*))\Gamma}{(\frac{1}{\eta} - \frac{\tilde{L}}{2\alpha}) \eta^2 (T+1)} + \frac{\delta \Gamma}{(\frac{1}{\eta} - \frac{\tilde{L}}{2\alpha}) \eta^2} = \varepsilon
+\end{equation*}
+
+\begin{equation*}
+    T + 1 \geq \frac{\Delta_0 \Gamma}{(\eta - \frac{\tilde{L}\eta^2}{2\alpha}) \left( \varepsilon -\frac{\delta\Gamma}{\eta - \frac{\tilde{L}\eta^2}{2\alpha}}\right)}.
+\end{equation*}
+
+We get an estimate for the number of steps required for a given accuracy
+\begin{equation*}
+      T = \mathcal{O}\left( \frac{\Delta_0 \Gamma}{(\eta - \frac{\tilde{L}\eta^2}{2\alpha}) \left( \varepsilon -\frac{\delta\Gamma}{\eta - \frac{\tilde{L}\eta^2}{2\alpha}}\right)} \right).
+\end{equation*}
+\end{proof}
+
+
+\begin{proof}
+\textbf{It's version without ASSUMPTION on $g_t$ and $D_t$, with Lemma 1 from <<On Scaled Methods for Saddle Point Problems>>}
+
+Really new theorem with assumptions on $\mu-convex$ and $L-lipshits$ on functions. $||w_*||_2^2 \leq \Omega_0^2$
+
+\begin{equation*}
+    ||w_{t+1}-w_*||_{D_t}^2 = ||w_t - w_*||_{D_t}^2 - 2 \eta \langle \nabla f(w_t) + D_t \nabla r(w_t), w_t - w_* \rangle + \eta^2 ||\nabla f(w_t) +D_t \nabla r(w_t)||_{D_t^{-1}}^2 \leq 
+\end{equation*}
+
+Using assumption on $\mu-convex$ of function f:
+\begin{equation*}
+    ||w_t-w_*||_{D_t}^2 + 2\eta \left(f(w_*) - f(w_t) - \frac{\mu_f}{2} ||w_t - w_*||_2^2 \ \right) - 2\eta \langle \nabla r(w_t), w_t - w_* \rangle_{D_t} + \eta^2 ||\nabla f(w_t) + D_t \nabla r(w_t)||_{D_t^{-1}}^2 \leq
+\end{equation*}
+
+
+\begin{equation*}
+    \sigma_{t+1}^2 = ||D_{t+1}||_2^2 = ||\beta D_{t} + (1-\beta) H_t ||_2^2 =\beta^2 ||D_{t} +\frac{1-\beta}{\beta}H_t||_2^2 
+\end{equation*}
+Then let's rewrite:
+\begin{equation*}
+    \sigma_{t+1}^2 \leq \beta^2 \dot (1+\frac{1}{a}) \sigma_{t}^2 + \left(\frac{1-\beta}{\beta}\right)^2(1+a)||\nabla f(w_t)||_2^2 =  \beta^2 (1+\frac{1}{a})\sigma_{t}^2 + \left(\frac{1-\beta}{\beta} \right)^2(1+a) ||\nabla f(w_t) - \nabla f(w_*)||_2^2 \leq
+\end{equation*}
+\begin{equation*}
+    \leq \beta^2(1+\frac{1}{a})\sigma_{t}^2 + 2\left(\frac{1-\beta}{\beta} \right)^2(1+a)L_f (f(w_t) - f(w_*))
+\end{equation*}
+Let's choose in such way: $\beta^2(1+\frac{1}{a}) = \beta$, $a = \frac{\beta}{1-\beta}$:
+\begin{equation*}
+    \sigma_{t+1}^2 \leq \beta \sigma_{t}^2 + 2\frac{1-\beta}{\beta^2}L_f (f(w_t) - f(w_*))
+\end{equation*}
+
+In L2 case regularization we can write second member:
+
+\begin{equation*}
+    -2\eta \langle D_t \nabla r(w_t), w_t-w_*\rangle = -2\lambda\eta \langle D_t w_t, w_t-w_*\rangle = -2\lambda\eta \langle w_t - w_*, w_t-w_*\rangle_{D_t} - 2\lambda\eta \langle w_*, w_t-w_*\rangle_{D_t} = 
+\end{equation*}
+\begin{equation*}
+    = -2\eta\lambda||w_t-w_*||_{D_t}^2 - 2\lambda\eta\langle w_*\sqrt{D_t}, \sqrt{D_t}(w_t-w_*)\rangle \leq -2\eta \lambda ||w_t-w_*||_{D_t}^2 + \lambda\eta||w_*\sqrt{D_t}||_2^2 + \lambda\eta||w_t - w_*||_{D_t}^2 \leq 
+\end{equation*}
+\begin{equation*}
+    \leq -\eta\lambda||w_t-w_*||_{D_t}^2 + \frac{\lambda\eta\Omega_0^2}{\alpha}||D_t||_2^2
+\end{equation*}
+
+
+Using $L$-lipschitz $||\nabla f(w_t) - \nabla f(w_*)||_2^2 \leq 2L_f(f(w_t) - f(w_*))$
+
+\begin{equation*}
+    \eta^2 ||\nabla f(w_t) + D_t \nabla r(w_t)||_{D_t^{-1}}^2 \leq 2\eta^2 ||\nabla f(w_t) - \nabla f(w^*) ||_{D_t^{-1}}^2 + 4\eta^2 ||\nabla r(w_t) - \nabla r(w_*) ||_{D_t}^2 + 4\eta^2||\nabla r(w_*)||_{D_t}^2 \leq 
+\end{equation*}
+
+\begin{equation*}
+    \leq 4\eta^2\lambda^2 ||w_t - w_*||_{D_t}^2 + \frac{4\eta^2L_f}{\alpha} \left(f(w_t)-f(w_*)\right) + 4\eta^2\lambda^2\Omega_0^2||D_t||_2 \leq
+\end{equation*}
+Using Lemma \ref{lemma:existence}:
+\begin{equation*}
+ \leq 4\eta^2 \lambda^2 ||w_t - w_*||_{D_{t-1}}^2 \left(1+\frac{(1-\beta)\Gamma^2}{2\alpha}\right) + \frac{4\eta^2L_f}{\alpha} \left(f(w_t) - f(w_*)\right) + 4\eta^2 \frac{\lambda^2\Omega_0^2}{\alpha} ||D_t||_2^2
+\end{equation*}
+
+Finally we geta:
+\begin{equation*}
+    R_{t+1}^2 \leq \left(1 - \eta\mu_f - \eta\lambda+4\eta^2\lambda^2 \right)\left(1+\frac{(1-\beta)\Gamma^2}{2\alpha}\right)R_t^2 + \left( \frac{4\eta^2\lambda^2\Omega_0^2}{\alpha} + \frac{\lambda\eta\Omega_0^2}{\alpha}\right) \sigma_t^2 + \left(\frac{4\eta^2L_f}{\alpha} - 2\eta\right) \left(f(w_t) - f(w_*) \right)
+\end{equation*}
+
+\begin{equation*}
+    \sigma_{t+1}^2 \leq \beta \sigma_{t}^2 + 2\frac{1-\beta}{\beta^2}L_f (f(w_t) - f(w_*))
+\end{equation*}
+
+\newpage
+\begin{equation*}
+    R_{t+1}^2 + M\sigma_{t+1}^2 \leq \left(1 - \eta\mu_f - \eta\lambda + 4\eta^2\lambda^2 \right)\left(1+\frac{(1-\beta)\Gamma^2}{2\alpha}\right)R_t^2 + \left( \frac{4\eta^2\lambda^2\Omega_0^2}{\alpha} + \frac{\lambda\eta\Omega_0^2}{\alpha} + M\beta\right) \sigma_t^2 +
+\end{equation*}
+\begin{equation*}
+    + \left( \frac{4\eta^2L_f}{\alpha} + 2M\frac{1-\beta}{\beta^2}L_f - 2\eta\right) \left(f(w_t) - f(w_*) \right)
+\end{equation*}
+
+Let's write restrictions on learning rate, that is on $\eta$:
+
+$\beta \geq 1 - \frac{\eta(\mu_f+\lambda)\alpha}{2\Gamma^2}$, $\eta \leq \frac{\mu_f + \lambda}{8 \lambda^2}$
+\begin{equation*}
+    \left(1 - \eta\mu_f - \eta\lambda + 4\eta^2\lambda^2 \right)\left(1+\frac{(1-\beta)\Gamma^2}{2\alpha}\right) \leq \left(1 - \eta \frac{\mu_f+\lambda}{2}\right) \left(1 + (1-\beta) \frac{\Gamma^2}{2\alpha} \right)
+\end{equation*}
+\begin{equation*}
+     \leq \left(1 - \eta \frac{\mu_f+\lambda}{2}\right) \left(1 + \eta\frac{\mu_f + \lambda}{4} \right) = 1 + \eta \frac{\mu_f + \lambda}{4} - \eta \frac{\mu_f + \lambda}{2} - \eta^2 \frac{(\mu_f+\lambda)^2}{8} 
+\end{equation*}
+\begin{equation*}
+    = 1 - \eta \frac{\mu_f + \lambda}{4} - \eta^2 \frac{(\mu_f + \lambda)^2}{8} < 1 - \eta \frac{\mu_f + \lambda}{4}
+\end{equation*}
+
+Then write restrictions on second one, such that:
+\begin{equation*}
+\eta < \frac{1}{4\lambda} 
+\end{equation*}
+
+\begin{equation*}
+    \left( \frac{4\eta^2\lambda^2\Omega_0^2}{\alpha} + \frac{\lambda\eta\Omega_0^2}{\alpha} + M\beta\right) \leq \frac{2\lambda\eta\Omega_0^2}{\alpha} + M\beta = \left(\frac{1+\beta}{2} \right)M
+\end{equation*}
+\begin{equation*}
+    M = \frac{4\eta \lambda \Omega_0^2}{\alpha(1-\beta)}
+\end{equation*}
+
+Let's write a restrictions on third condition:
+%\begin{equation*}
+%    \eta < \frac{\alpha}{4 L_f} 
+%\end{equation*}
+\begin{equation*}
+    2\eta^2 \frac{L_f}{\alpha} - \eta + \frac{1-\beta}{\beta^2}L_fM = 2\eta^2 \frac{L_f}{\alpha} - \eta + \frac{1-\beta}{\beta^2}L_f \frac{4\eta \lambda \Omega_0^2}{\alpha(1-\beta)} \leq 0
+\end{equation*}
+divide it on $\eta$:
+\begin{equation*}
+    2\eta \frac{L_f}{\alpha} - 1 + \frac{1-\beta}{\beta^2}L_f \frac{4 \lambda \Omega_0^2}{\alpha(1-\beta)} \leq 0
+\end{equation*}
+write restrictions on $\lambda:$ 
+\begin{equation*}
+\lambda \leq \frac{\alpha \beta^2}{8L_f\Omega_0^2}    
+\end{equation*}
+
+\begin{equation*}
+    \eta < \frac{\alpha}{4 L_f} \leq \frac{\alpha}{2L_f} \left(1 - \frac{4L_f\lambda\Omega_0^2}{\alpha\beta^2} \right)
+\end{equation*}
+
+\newpage
+And we can run the recursion, given that:
+\begin{equation*}
+    R_{t+1}^2 + M \sigma_t^2 \leq \left(1-\eta\frac{\mu_f+\lambda}{4} \right) R_t^2 + \left(\frac{1+\beta}{2}\right) \cdot M \sigma_t^2 \leq ... \leq \left(1-\eta\frac{\mu_f+\lambda}{4} \right)^T R_0^2 + \left(\frac{1+\beta}{2}\right)^T M \sigma_0^2
+\end{equation*}
+
+\begin{equation*}
+    \leq \exp{\left(-\eta\frac{\mu_f + \lambda}{4} \cdot T\right)} R_0^2 + \left(\frac{1+\beta}{2} \right)^T M \sigma_0^2 \leq \varepsilon
+\end{equation*}
+
+We have list of restrictions on optimizer parameters:
+\begin{enumerate}
+    \item $\lambda < \frac{\alpha \beta^2}{8L_f \Omega_0^2}$
+    \item $\eta \leq \frac{8\mu_f L_f^2 \Omega_0^4}{\alpha^2 \beta^4} + \frac{L_f \Omega_0^2}{\alpha \beta^2} < \frac{\mu_f + \lambda}{8\lambda^2}$
+    \item $\eta < \frac{2L_f \Omega_0^2}{\alpha \beta^2} \leq \frac{1}{4\lambda}$
+    \item $\beta \geq 1 - \frac{\eta(\mu_f + \lambda)\alpha}{2 \Gamma^2}$
+    \item $\eta < \frac{\alpha}{4L_f}$
+    
+\end{enumerate}
+
+\begin{equation*}
+    \eta_{min} = \min \left\{ \frac{2L_f \Omega_0^2}{\alpha \beta^2}; \frac{\alpha}{4L_f}; \frac{8\mu_f L_f^2 \Omega_0^4}{\alpha^2 \beta^4} + \frac{L_f \Omega_0^2}{\alpha \beta^2} \right\}
+\end{equation*}
+
+
+$$
+T_1 \leq \log{\left( \frac{\varepsilon (1-\beta) \alpha }{8 \eta_{min} \lambda \Omega_0^2} \right)} \cdot \log{\frac{2}{1+\beta}}
+$$
+
+$$
+T_2 \leq \frac{4}{\eta(\mu_f + \lambda)} \log{\left(\frac{2 R_0^2}{\varepsilon} \right)} = \frac{4}{\eta_{min} \left(\mu_f + \frac{\alpha \beta^2}{8L_f \Omega_0^2} \right)}\log{\left(\frac{2 R_0^2}{\varepsilon} \right)}
+$$
+
+$$
+T = \max \left\{T_1, T_2=\right\}
+$$
+
+IF WE have restrictions on $\Omega_0^2 \geq \frac{\alpha^2 \beta^2}{8L_f^2}$, then $\eta_{min} = \frac{\alpha}{4L_f}$, $\lambda = \frac{\alpha \beta^2}{8L_f \Omega_0^2}$, 
+
+$$
+T_1 \leq \log{\left( \frac{4 \varepsilon (1-\beta) L_f^2 }{\alpha \beta^2} \right)} \cdot \log{\frac{2}{1+\beta}}
+$$
+
+$$
+T_2 \leq \frac{4}{\frac{\alpha}{4L_f} \left(\mu_f + \frac{\alpha \beta^2}{8L_f \Omega_0^2} \right)}\log{\left(\frac{2 R_0^2}{\varepsilon} \right)}
+$$
+
+
+
+\end{proof}
+\fi

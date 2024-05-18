@@ -2,7 +2,7 @@
 \usepackage{bbm}
 \usepackage[utf8]{inputenc}
 \usepackage[T2A]{fontenc}
-\usepackage[english]{babel}
+\usepackage[russian, english]{babel}
 \usepackage{amscd,amssymb}
 \usepackage{amsfonts,amsmath,array}
 \usepackage{sidecap}
@@ -28,45 +28,46 @@
 % Создаем новую команду для assumptions
 %----------------------------------------------------------------------------------------------------------
 
-\newtheorem{assumption}{Assumption}
+\newtheorem{assumption}{Предположение}
+
 %beamer  theme's used to be here :)
 %\usetheme{mipt_beamer}
 \usetheme{boxes}
 
 %----------------------------------------------------------------------------------------------------------
-\title[\hbox to 56mm{Feature}]{Methods with preconditioning and weight decaying}
-\author[M.\,K.~Kreinin]{Matvei Kreinin}
-\institute{Moscow Institute of Physics and Technology}
-\date{\footnotesize
-A. Beznosikov
-\par\bigskip\small 2023}
+\title[\hbox to 56mm{Feature}]{Методы с предобуславливанием и затуханием весов}
+\author[М.\,В.~Крейнин]{Матвей Вадимович Крейнин}
+\institute{Московский Физико-Технический Институт}
+
+\date{
+\footnotesize
+\par\smallskip\emph{Кафедра:} Интеллектуальный анализ данных
+\par\smallskip\emph{Научный руководитель:} кандидат ф.-м. наук А.\,Н.~Безносиков
+\par\bigskip\small 2024}
 
 \begin{document}
 \maketitle
 
-\begin{frame}{Problem statement}
+\begin{frame}{Постановка задачи}
 
-    Minimize function:
+    Минимизация функции:
     \begin{equation}
     \label{eq:general}
         \min_{w \in \mathbb{R}^d} f(w)
     \end{equation} 
-    
-    The classic approach to the solution of minimize function:
+    Классическое решение проблемы минимизации функции в машинном обучении:
     \begin{equation*}
         w_t = w_{t-1} - \eta \nabla f(w_t).
     \end{equation*}
 
-    Preconditioned algorithms:
+    Алгоритмы с предобуславливанием:
     \begin{equation*}
         w_{t+1} = w_t - \eta D_t^{-1}g_t
     \end{equation*}
-    where $g_t$ is an unbiased stochastic gradient, $D_t$ is a matrix of preconditioning.
-    
-    
+    где $g_t$ это несмещённый стохастический градиент, $D_t$ это матрица предобуславливания.
 \end{frame}
 
-\begin{frame}{Different ways of matrix with preconditioning}
+\begin{frame}{Различные способы задания матрицы }
     AdaGrad:
     \begin{equation*}
         D_t = diag \left\{\sqrt{\sum\limits_{i=0}^t g_i \odot g_i} \right\}
@@ -79,179 +80,167 @@ A. Beznosikov
     \begin{equation*}
         D_t = diag \{z \odot \nabla^2 f(w_t) z\}
     \end{equation*}
-    where $z$ is a random vector from Randamaher distribution.
+    где $z$ это случайный вектор из распределения Рандемахера.
 \end{frame}
 
 
-\begin{frame}[shrink]{New minimizing function}
+\begin{frame}[shrink]{Новая минимизируемая функция}
 \begin{equation*}
         \min_{w \in \mathbb{R}^d} F(w) := f(w) + r(w)
 \end{equation*}
-where $r(w)$ is a the regularization function.
+где $r(w)$ это функция регуляризации.
 
 \begin{algorithm}[H]
-    \caption{Different ways of using preconditioning for regularized problem}
+    \caption{Различные способы использования предобуславливания с регуляризацией}
     \label{alg:precond}
     
     \begin{algorithmic}
-            \Require{$\eta$ $-$ learning rate, $f$ $-$ objective function}
+            \Require{$\eta$ $-$ шаг обучения, $f$ $-$ оптимзируемая функция}
             
-            \While {$w$ not converged}
+            \While {$w$ не сойдется}
             \State $t = t+1$
-            \State $g_t \gets$ stochastic gradient of $f$
-            \State $\textcolor{blue}{g_t \gets g_t + \nabla r(w_t)}$ \hfill \textcolor{blue}{standart regularization}
-            \State $D_t \gets$ preconditioning matrix, based on $g_t$
+            \State $g_t \gets$ стохастический градиент $f$
+            \State $\textcolor{blue}{g_t \gets g_t + \nabla r(w_t)}$ \hfill \textcolor{blue}{обычная регуляризация}
+            \State $D_t \gets$ матрица предобуславливания с помощью $g_t$
 
-            \State \textcolor{blue}{$w_t \gets w_{t-1} - \eta \cdot D_t^{-1}g_t $} \hfill \textcolor{blue}{standart regularization}, 
-            \State \textcolor{orange}{$w_t \gets w_{t-1} - \eta \cdot D_t^{-1} \left(g_t +\nabla r(w_t) \right)$} \hfill \textcolor{orange}{scaled weight decay}, 
-            \State \textcolor{red}{$w_t \gets w_{t-1} - \eta \cdot D_t^{-1} g_t  - \eta \cdot \nabla r(w_t)$} \hfill \textcolor{red}{weight decay}, 
+            \State \textcolor{blue}{$w_t \gets w_{t-1} - \eta \cdot D_t^{-1}g_t $} \hfill \textcolor{blue}{обычная регуляризация}, 
+            \State \textcolor{orange}{$w_t \gets w_{t-1} - \eta \cdot D_t^{-1} \left(g_t +\nabla r(w_t) \right)$} \hfill \textcolor{orange}{масштабированное затухание весов}, 
+            \State \textcolor{red}{$w_t \gets w_{t-1} - \eta \cdot D_t^{-1} g_t  - \eta \cdot \nabla r(w_t)$} \hfill \textcolor{red}{затухание весов}, 
             \EndWhile
     \end{algorithmic}
 \end{algorithm}
 
 \end{frame}
 
-\begin{frame}{Again new target function}
-Put $D_t^{-1}$ out of brackets and get new target function:
+\begin{frame}{Альтернативный взгляд}
+
+Вынесем $D_t^{-1}$ за скобки и получим новый градиент:
 \begin{equation*}
     w_{t+1} = w_t - \eta D_t^{-1}(\nabla f(w_t) + D_t \nabla r(w_t))
 \end{equation*}
-A new regularization function $\nabla \tilde{r}(w) = D_t \nabla r(w)$.
+Новая функция регуляризации $\nabla \tilde{r}(w) = D_t \nabla r(w)$.
 
 
-New target function:
+Задача минимизации, которая решается на самом деле:
 \begin{equation*}
+\label{F_tilde}
     \min_{w \in \mathbb{R}^d} \tilde{F}(w) := f(w) + \tilde{r}(w)
 \end{equation*}
-,where $\tilde{F}(w)$ changes every time step.
+где $\tilde{F}(w)$ изменяется на каждом шаге.
 \end{frame}
 
-\begin{frame}{Assumptions}
+\begin{frame}{Предположения на функции}
 
-\begin{assumption}[Regularizer structure]
+\begin{assumption}{(Структура регулязитора)}
     \label{ass:regstruct}
-    Regularizer $r$ is separable, i.e. it can be viewed in the form:
-    $$r(w) = \sum_{i=1}^d r_i(w_i).$$
+    Регуляризатор $r$ сепарабелен, то есть он может быть представлен в следующем виде:
+    $r(w) = \sum_{i=1}^d r_i(w^i),$
+    где $r_i(x) \ge 0$ для $i \in \overline{1, d}$ и $x \in \mathbb{R}$.
 \end{assumption}
 
-\begin{assumption}[Preconditioner structure]
+\begin{assumption}{(Структура матрицы предобуславливания)}
     \label{ass:precondstruct}
-    Preconditioner $D_t$ can be viewed in the following form:
-    \begin{equation*}
-         D_t = \textrm{diag} \left\{ d_t^1 \ldots, d
-_t^d \right\}.\end{equation*}
+    Матрица предобуславливания $D_t$ может быть представлена в следующем виде:
+     $D_t = \textrm{diag} \left\{ d_t^1 \ldots, d
+_t^d \right\}.$
+\end{assumption}
+\begin{assumption}{(Сильная выпуклость)}
+    \label{ass:muconvex}
+    Сушествует $\mu_f$ такая, что $\forall x, y \in \mathbb{R}^d$ выполняется:
+    $$
+    f(y) \geq f(x) + \langle \nabla f(x), y-x \rangle + \frac{\mu_f}{2} ||x-y||_2^2
+    $$
 \end{assumption}
 \end{frame}
 
-\begin{frame}{Assumptions}
-    \begin{assumption}[$L$-smoothness]
+\begin{frame}{Предположения на функции}
+    \begin{assumption}{($L$-гладкость)} 
 \label{ass:smoothness}
 \begin{itemize}
-    \item 	The gradients of $f$ are $L_f$-Lipschitz continuous $\forall w \in \mathbb{R}^d$, i.e. there exists a constant $L_f > 0$ such that $\forall x, y \in \mathbb{R}^d$,
+    \item 	Градиент функции $f$ является $L_f$-гладким, то есть существует такая константа $L_f > 0$ такая, что $\forall x, y \in \mathbb{R}^d$,
     	\begin{equation*}
     		f(x) \leq f(y) + \langle \nabla f(y), x-y \rangle + \frac{L_f}{2} \|x - y\|^2.
     	\end{equation*}
-    \item    The gradient of $r$ is $L_r$-Lipschitz continuous $\forall w \in \mathbb{R}^d$, i.e. there exists a constant $L_r > 0$ such that $\forall x, y \in \mathbb{R}^d$,
+    \item    Градиент функции $r$ является $L_r$-гладким, то есть существует такая константа $L_r > 0$ такая, что $\forall x, y \in \mathbb{R}^d$,
 	\begin{equation*}
 		r(x) \leq r(y) + \langle \nabla r(y), x-y \rangle + \frac{L_r}{2} ||x - y||^2.
 	\end{equation*}
 \end{itemize}
 \end{assumption}
+
 \end{frame}
 
-\begin{frame}[shrink]{Assumptions}
-\begin{assumption}[PL--condition]
-\label{ass:plcondition}
-	There exists $\mu > 0$, such that $\forall w \in \mathbb{R}^d$
-    \begin{equation*}
-        ||\nabla f(w) || \geq 2 \mu (f(w) - f^*).
-    \end{equation*}
+\begin{frame}[shrink]{Предположения на функции}
+\begin{assumption}{(Ограниченность регуляризатора)}
+\label{ass:regbound}
+Регуляризатор ограничен, то есть существует константа $\Omega > 0$ такая, что $\forall w \in \mathbb{R}^d$ выполняется $ |r(w)| \le \Omega.$
 \end{assumption}
 
-\begin{assumption}[Preconditioner]
-Restrictions on preconditioner $D_t$
+\begin{assumption}{(Ограниченность предобуславливателя)}
 \label{ass:preconditioned}
+Существуют константы $\alpha, \Gamma \in \mathbb{R} : 0 < \alpha < \Gamma$ такие, что
 \begin{equation*}
-\alpha I \preccurlyeq D_t \preccurlyeq \Gamma I \Leftrightarrow \frac{I}{\alpha} \preccurlyeq D_t^{-1} \preccurlyeq \frac{I}{\Gamma}.
+\alpha I \preccurlyeq D_t \preccurlyeq \Gamma I \Leftrightarrow \frac{I}{\Gamma} \preccurlyeq D_t^{-1} \preccurlyeq \frac{I}{\alpha}.
 \end{equation*}
 \end{assumption}
 
-\begin{assumption}[Expectations]
-Restrictions on $D_t$ and $g_t$ are unbiased, i.e.
-\ref{ass:expectations}
+\begin{assumption}{(Ожидания)}
+\label{ass:expectations}
+$g_t$ являются несмещенными и имеют ограниченную вариацию на любом шаге, то есть
 \begin{equation*}
-\mathbb{E} \left[ D_t \right] = D_t \text{ and }\mathbb{E}\left[ g_t \right] = \nabla f (w_t), \mathbb{E}\left[ ||g_t - \nabla f||^2 \right] \leq \sigma^2.
+\mathbb{E}\left[ g_t \right] = \nabla f (w_t), \mathbb{E}\left[ ||g_t - \nabla f||^2 \right] \leq \sigma^2.
 \end{equation*}
 \end{assumption}
-    
+
 \end{frame}
 
-\begin{frame}{Lemmas}
-    \begin{lemma}[Existence of $\widetilde{r}$]
-    Suppose the Assumptions \ref{ass:regstruct}, \ref{ass:precondstruct} hold, the function $\widetilde{r}$ exists and has following form:
-    $$\widetilde{r}(w) = \sum_{i=1}^d d_t^i r_i(w_i)$$
+\begin{frame}{Леммы}
+    \begin{lemma}
+\label{lemma:existence}
+{(Существование $\widetilde{r}$)}
+    Предполагая, что \ref{ass:regstruct}, \ref{ass:precondstruct} выполняются, функция $\widetilde{r}$ существует и имеет следующую форму:
+    $$\widetilde{r}_t(w) = \sum_{i=1}^d d_t^i r_i(w_i)$$
 \end{lemma}
 
-\begin{lemma}[L-smoothness of $\widetilde{r}$]
-Suppose the Assumptions \ref{ass:regstruct}, \ref{ass:precondstruct}, \ref{ass:smoothness} hold,
-The gradient of $\widetilde{r}$ is $L_{\tilde{r}}$-continuous, i.e.  there exists a constant $L_{\tilde{r}} > 0$ such that $\forall x, y \in \mathbb{R}^d$,
-    	\begin{equation*}
-    		\widetilde{r}(x) \leq \widetilde{r}(y) + \langle \nabla \widetilde{r}(y), x-y \rangle + \frac{L_{\tilde{r}}}{2} ||x - y||^2,
+\begin{lemma}\label{lemma:tildesmoothness}{(L-гладкость $\widetilde{r}$)}
+Предполагая, что \ref{ass:regstruct}, \ref{ass:precondstruct}, \ref{ass:smoothness}, \ref{ass:preconditioned} выполняются,
+градиент $\widetilde{r}$ является $L_{\tilde{r}}$-непрерывным, 
+то есть существует константа  $L_{\tilde{r}} > 0$ такая, что $\forall x, y \in \mathbb{R}^d$,
+\begin{equation*}
+    		\widetilde{r}_t(x) \leq \widetilde{r}_t(y) + \langle \nabla \widetilde{r}_t(y), x-y \rangle + \frac{L_{\tilde{r}}}{2} ||x - y||^2,
     	\end{equation*}
-     where $L_{\tilde{r}} = ||D_t|| L_r$
+     и $L_{\tilde{r}} = \Gamma L_r$.
 \end{lemma}
-\end{frame}
-\if 0
-\begin{frame}{Lemmas}
-    \begin{lemma}\label{lemma:lowerbondF}{Lower bound}
-Suppose the Assumptions \ref{ass:regstruct}, \ref{ass:precondstruct} and \ref{ass:smoothness} holds, then difference between a solution $w^*$ of a problem \eqref{F_big} and a solution $\widetilde{w}^*$ of a problem \eqref{F_tilde} can be bounded below.
-    \begin{equation*}
-        \|\widetilde{w}^* - w^* \| L_F \geq \| \nabla r (\widetilde{w}^*) (I - D_t)\|
-    \end{equation*}
-\end{lemma}
-\end{frame}
-\fi 
 
-\begin{frame}{Theorems}
-\begin{theorem}[1]
-\label{theor:1}
-    Suppose the Assumptions \ref{ass:smoothness}, \ref{ass:preconditioned} hold, let $\varepsilon > 0$ and let the step-size satisfy, where $L_f, L_{\tilde{r}}$ - lipschitz constants of functions $f$ and $\tilde{r}$, $\alpha I \preccurlyeq D_t \preccurlyeq \Gamma$
+
+\end{frame}
+
+
+\begin{frame}{Теоремы}
+\begin{theorem} 
+    \label{theor:1}
+    Предполагая, что \ref{ass:regstruct}, \ref{ass:precondstruct}, \ref{ass:smoothness}, \ref{ass:regbound}, \ref{ass:preconditioned} выполняются, положим ошибку $\varepsilon > 0$ и шаг обучения удовлетворяют условию:
+    $    \eta < \frac{2 \alpha}{L_f + \Gamma L_{r}}$,
+    где $L_f, L_{r}$ - константа Липшица функций $f$ и $r$. 
+    Необходимое количество итераций, начиная с начальной точки
+    $w_0 \in \mathbb{R}^d$ с $\Delta_0 = \tilde{F}_0(w_0) - f^*$, где $\widetilde{F}_t$ определено в \eqref{F_tilde} и $f^*$ решением задачи \eqref{eq:general}, 
+    необходимое для $\varepsilon$-приближения    
     \begin{equation*}
-        \eta < \frac{2 \alpha}{L_f + \Gamma L_{\tilde{r}} \alpha}.
-    \end{equation*}
-    Then, the number of iterations performed by algorithms with preconditioning and weight decaying, starting from an initial point $w_0 \in \mathbb{R}^d$ with $\Delta_0 = \tilde{F}(w_0) - \tilde{F}^*$, required to obtain and $\varepsilon$-approximate solution of the convex problem \eqref{eq:general} can be bounded by
-    \begin{equation*}
-          T = \mathcal{O}\left( \frac{2\Delta_0 \Gamma \alpha } {\left(2\alpha - \left( L_f + \Gamma L_{\tilde{r}} \alpha \right)\eta \right) \eta \varepsilon} \right).
-    \end{equation*}
+      T = \mathcal{O}\left( \frac{\Delta_0 \Gamma}{(\eta - \frac{\tilde{L}\eta^2}{2\alpha}) \left( \varepsilon -\frac{\delta\Gamma}{\eta - \frac{\tilde{L}\eta^2}{2\alpha}}\right)} \right),
+\end{equation*}
+где $\widetilde{L} = L_f + \Gamma L_{r}$ and $\delta$ может выбрано сколь угодно малым с помощью выбора гиперпараметров $\alpha, \beta, \Gamma$
 \end{theorem}
 \end{frame}
 
-\begin{frame}{Theorems}
+\begin{frame}{Теоремы}
     \begin{theorem}
 \label{theor:2}
-    Suppose the Assumptions \ref{ass:smoothness}, \ref{ass:plcondition}, \ref{ass:preconditioned} hold, let $\varepsilon > 0$ and let the step-size satisfy, where $\alpha I \preccurlyeq D_t \preccurlyeq \Gamma$, $L_{\tilde{F}} = L_{f} + \Gamma L_{r}$, and $L_{F}, L_{r}$ - lipschitz constant of functions $f$ and $r$, 
-    \begin{equation*}
-        \eta \leq \frac{2 \alpha}{L_{\widetilde{F}}}.
-    \end{equation*}
-    Let $\tilde{F}^*$ be a solution of the optimization function. Then, the number of iterations performed by algorithms with preconditioning and weight decaying, starting from an initial point $w_0 \in \mathbb{R}^d$ with $\Delta_0 = \tilde{F}(w_0) - \tilde{F}^*$, required to obtain and $\varepsilon$-approximate solution of the convex problem \eqref{eq:general} can be bounded by
-    \begin{equation*}
-        T =  \mathcal{O}\left( \frac{\ln \frac{\Delta_0}{\epsilon}}{2 \mu \eta^2 \left(\frac{1}{\eta} - \frac{L_{\tilde{F}}}{2 \alpha} \right)} \right).
-    \end{equation*}
-\end{theorem}
-\end{frame}
+    Преполагая, что \ref{ass:regstruct}, \ref{ass:precondstruct}, \ref{ass:smoothness}, \ref{ass:regbound}, \ref{ass:preconditioned}, \ref{ass:muconvex} выполняются, положим ошибку $\varepsilon > 0$ и шаг обучения удовлетворяют условию: $\eta < \frac{\alpha}{4L_f}$, гиперпараметры удовлетворяют условиям: $\lambda < \frac{\alpha \beta^2}{8L_f \Omega_0^2}$, $\beta \geq 1 - \frac{\eta(\mu_f + \lambda)\alpha}{2 \Gamma^2}$, $\Omega_0^2 \geq \frac{\alpha^2 \beta^2}{8L_f^2}$. Получаем оценку на необходимое количество шагов для сходимости алгоритма к заданной точности
 
-\begin{frame}[shrink]{Theorems}
-    \begin{theorem}[3]
-    Suppose the Assumptions \ref{ass:smoothness}, \ref{ass:plcondition}, \ref{ass:preconditioned}, \ref{ass:expectations} hold, let $\varepsilon > 0$ and let the step-size satisfy
-    \begin{equation*}
-        \eta \approx \sqrt{\frac{\left( \tilde{F}(w_0) - \tilde{F}(w_*) \right)\alpha}{L \sigma^2}}.
-    \end{equation*}
-    Let $\tilde{F}^*$ be a solution of the optimization function. Then, the number of iterations performed by algorithms with preconditioning and weight decaying, starting from an initial point $w_0 \in \mathbb{R}^d$ with $\Delta_0 = \tilde{F}(w_0) - \tilde{F}^*$, required to obtain and $\varepsilon$-approximate solution of the convex problem \eqref{eq:general} can be bounded by, where $L_{\tilde{r}}, L_{f}$ - lipschitz constant of functions $\tilde{r}$ and $f$, and $L_{\tilde{F}} = L_{f} + \Gamma L_{r}$
-    
-    \begin{equation*}
-        T =  \mathcal{O}\left( \frac{\Gamma \Delta_0}{\left(\frac{1}{\eta} - \frac{ \Gamma L_{\tilde{r}}}{2} - \frac{\Gamma L_{\tilde{F} }L_{f}\eta^2}{2\alpha^2} \right) \varepsilon} \right).
-\end{equation*}
-    \label{theor:3}
+   $$
+T = \max \left\{ \log{\left( \frac{4 \varepsilon (1-\beta) L_f^2 }{\alpha \beta^2} \right)} \cdot \log{\frac{2}{1+\beta}} ;
+\frac{4}{\frac{\alpha}{4L_f} \left(\mu_f + \frac{\alpha \beta^2}{8L_f \Omega_0^2} \right)}\log{\left(\frac{2 ||w_0-w_*||_2^2}{\varepsilon} \right)} \right\}
+$$
 \end{theorem}
 \end{frame}
 
@@ -298,43 +287,27 @@ Suppose the Assumptions \ref{ass:regstruct}, \ref{ass:precondstruct} and \ref{as
 \end{frame}
 
 \begin{frame}{Experiments}
-   \begin{figure}[H]
+\begin{figure}[H]
 \begin{minipage}[h]{0.49\linewidth}
 \centering
-\includegraphics[width=\linewidth]{adams_errors.jpeg}
+
+\includegraphics[width=\linewidth]{fig1.jpg}
 
 \caption{Adam and AdamW with basic criterion}
 \label{fig:adams_errors}
 \end{minipage}
 \hfill
 \begin{minipage}[h]{0.49\linewidth}
-\includegraphics[width=\linewidth]{adams_special_errors.jpeg}
-
+\includegraphics[width=\linewidth]{fig2.jpg}
 \caption{Adam and AdamW with modified criterion}
 \label{fig:adams_special_errors}
 \end{minipage}
 \end{figure}
 \end{frame}
 
-\begin{frame}[shrink]{Experiment}
-\begin{columns}[T]
-\column{0.7\textwidth}
-
-\begin{center}
-\includegraphics[scale=0.18]{new_layers.png}
-    
-    Distribution of standard deviation of elements of matrix $D_t$ over epochs. 
-\end{center}
-\column{0.3\textwidth}
-\begin{center}
-  Deviation of the normalized weights in the convolutional layers has rising trend. Hence, difference
-between solutions of different problems is bounded below and methods converge to a different optimums.
-\end{center}
-\end{columns}
-\end{frame}
 
 
-\begin{frame}{Publications:}
+\begin{frame}{Список литературы}
     \begin{itemize}
         \item Kingma, Diederik P., and Jimmy Ba. "Adam: A method for stochastic optimization." arXiv preprint arXiv:1412.6980 (2014).
         \item Jahani, Majid, et al. "Doubly adaptive scaled algorithm for machine learning using second-order information." arXiv preprint arXiv:2109.05198 (2021).
@@ -345,13 +318,11 @@ between solutions of different problems is bounded below and methods converge to
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Conclusion:}
+\begin{frame}{Заключение}
     \begin{itemize}
-        \item Proposed novel approach how to apply weight decaying in algorithm.
-        \item Theorethical analyse of convergency of methods with preconditioning and weight decaying. 
-        \item Create new optimization algorithm AdamWH.
-        \item 3 theorems and 2 lemmas for estimating the convergence of methods with preconditioning and weight decaying are proved 
-        \item The further direction of analyzing the distribution of preconditioning elements in neural networks, another direction is to make a coordinate adam in neural networks.
+        \item Исследована теоретическая сходимость методов.
+        \item Предложен новый метод добавления регуляризатора в методы с предобуславливанием.
+        \item Доказаны две теоремы и две леммы.
     \end{itemize}
 \end{frame}
 
