@@ -42,12 +42,10 @@
 \end{algorithmic}
 \end{algorithm}
 
-В этом разделе приводится численные эксперименты для вышеупомянутых методов оптимизации. Эксперименты проводились на процессоре $x86$ и использованием графического ускорителя NVIDIA GeForce RTX 3090, эскперименты были воспроизведены на 8-ми ядерном процессоре на архитектуре ARM-64.
-
+В этом разделе приводится численные эксперименты для вышеупомянутых методов оптимизации. Эксперименты проводились на процессоре x$86$ и графическим ускорителем NVIDIA GeForce RTX 3090, эскперименты были воспроизведены на 8-ми ядерном процессоре на архитектуре ARM-64.
 
 \begin{figure}[h!]
 \centering
-%\includegraphics[width=\linewidth]{pictures/adams_errors.jpeg}
 \includegraphics[width=0.7\linewidth]{pictures/fig1.jpg}
 \captionsetup{justification=centering,margin=0.5cm}
 \caption{Adam и AdamW по классическому критерию}
@@ -61,3 +59,39 @@
 \caption{Adam и AdamW с модифицированным критерием}
 \label{fig:adams_special_errors}
 \end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\linewidth]{pictures/fig1_oasis.jpg}
+\captionsetup{justification=centering,margin=0.5cm}
+\caption{OASIS и OASISW по классическому критерию}
+\label{fig:oasis_errors}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\linewidth]{pictures/fig2_oasis.jpg}
+\captionsetup{justification=centering,margin=0.5cm}
+\caption{OASIS и OASISW с модифицированным критерием}
+\label{fig:oasis_special_errors}
+\end{figure}
+
+Нужно пояснить данные графики, в первой теореме мы приводим оценку сходимости необходимого количества шагов для нормы градиента измененной функции $\tilde{F}$. На графиках \ref{fig:adams_errors} и \ref{fig:oasis_errors} приведена норма градиента изначальной функции потерь от итерации, как видно из графиков норма изначального градиента для метода с затуханием весов не убывает с итерациями, на графиках \ref{fig:adams_special_errors} и \ref{fig:oasis_special_errors} построены графики для нормы градиента модифицированной функции потерь $\tilde{F}$. Различие сходимости в методах Adam и OASIS иллюстрирует выбранный критерий сходимости в первой теореме, это подтверждает, что методы с предобуславливанием и затуханием весов оптимизируют не функцию потерь $F$, а $\tilde{F}$. Именно градиент $\tilde{F}$ убывает с итерациями в то время, как градиент $F$ остается неизменным.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\linewidth]{pictures/net_ADAML2.jpg}
+\captionsetup{justification=centering,margin=0.5cm}
+\caption{Adam и AdamW по классическому критерию в слое нейронной сети}
+\label{fig:adam_net_errors}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\linewidth]{pictures/net_ADAMW.jpg}
+\captionsetup{justification=centering,margin=0.5cm}
+\caption{Adam и AdamW с модифицированным критерием в слое нейронной сети}
+\label{fig:adam_net_special_errors}
+\end{figure}
+
+Это явление можно наблюдать при обучении нейроных сетей на задачу классификации, в силу сложности современных нейронных сетей этот эффект наблюдается в отдельных слоях нейронной сети, но все таки он есть и он влияет на сходимость.

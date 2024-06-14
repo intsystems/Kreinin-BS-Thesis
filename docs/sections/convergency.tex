@@ -174,17 +174,17 @@ $g_t$ являются несмещенными и имеют ограничен
 
 \begin{theorem}
 \label{theor:2}
-    Преполагая, что \ref{ass:regstruct}, \ref{ass:precondstruct}, \ref{ass:smoothness}, \ref{ass:regbound}, \ref{ass:preconditioned}, \ref{ass:muconvex} выполняются, положим ошибку $\varepsilon > 0$ и шаг обучения удовлетворяют условию: $\eta < \frac{\alpha}{4L_f}$, гиперпараметры удовлетворяют условиям: $\lambda < \frac{\alpha \beta^2}{8L_f \Omega_0^2}$, $\beta \geq 1 - \frac{\eta(\mu_f + \lambda)\alpha}{2 \Gamma^2}$, $\Omega_0^2 \geq \frac{\alpha^2 \beta^2}{8L_f^2}$. Получаем оценку на необходимое количество шагов для сходимости алгоритма к заданной точности:$$
-T = \max \left\{ \log{\left( \frac{4 \varepsilon (1-\beta) L_f^2 }{\alpha \beta^2} \right)} \cdot \log{\frac{2}{1+\beta}} ;
-\frac{4}{\frac{\alpha}{4L_f} \left(\mu_f + \frac{\alpha \beta^2}{8L_f \Omega_0^2} \right)}\log{\left(\frac{2 ||w_0-w_*||_2^2}{\varepsilon} \right)} \right\}$$
+    Преполагая, что \ref{ass:regstruct}, \ref{ass:precondstruct}, \ref{ass:smoothness}, \ref{ass:regbound}, \ref{ass:preconditioned}, \ref{ass:muconvex} выполняются, положим ошибку $\varepsilon > 0$ и шаг обучения удовлетворяют условию: 
+    $$
+    \eta < \eta_{min} = \min \left\{ \frac{2L_f \Omega_0^2}{\alpha \beta^2}; \frac{\alpha}{4L_f}; \frac{8\mu_f L_f^2 \Omega_0^4}{\alpha^2 \beta^4} + \frac{L_f \Omega_0^2}{\alpha \beta^2} \right\},
+    $$ гиперпараметры удовлетворяют условиям: $\lambda < \frac{\alpha \beta^2}{8L_f \Omega_0^2}$, $\beta \geq 1 - \frac{\eta(\mu_f + \lambda)\alpha}{2 \Gamma^2}$. Получаем оценку на необходимое количество шагов для сходимости алгоритма к заданной точности:
+    $$T = \mathcal{O} \left(\log\left(\frac{R_0^2 + \frac{8\lambda \Omega_0^2 \Gamma^2}{\alpha^2(\mu_f+\lambda)} \sigma_0^2}{\varepsilon} \right) \frac{4}{\eta_{min} (\mu_f + \lambda)\cdot \min \left\{1; \frac{2\alpha}{\Gamma^2} \right\} } \right)$$
 \end{theorem}
 
 Эти теоремы устанавливают сходимость методов с предобуславливанием и затуханием весов различных предположениях, а также определяют необходимое количество итераций для заданной точности. Для наших задач простой факт сходимости этих методов имеет огромное значение. 
 
 Однако характеристики решения $\widetilde{w}^*$ задачи
 \begin{equation} \label{F_tilde_problem}
-	\min_{w \ in \mathbb{R}^d} \tilde{F}(w) = f(w) + \tilde{r}(w),
+	\min_{w \in \mathbb{R}^d} \tilde{F}(w) = f(w) + \tilde{r}(w),
 \end{equation}
 к которым сходится этот метод, требуют более глубокого исследования, которое будет рассмотрено в следующем разделе.
-
-
