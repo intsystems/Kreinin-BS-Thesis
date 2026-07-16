@@ -1,0 +1,92 @@
+{
+ "diagquad|squares|l2": {
+  "eta": 0.0001,
+  "gF2_final": 0.006360730842393619,
+  "gFt2_final": 0.10776699987190615
+ },
+ "diagquad|squares|wh": {
+  "eta": 0.0001,
+  "gF2_final": 0.005996061807553989,
+  "gFt2_final": 0.08330168146295325
+ },
+ "diagquad|squares|w": {
+  "eta": 0.0001,
+  "gF2_final": 0.1369849665350211,
+  "gFt2_final": 0.019194075410734507
+ },
+ "diagquad|linear|l2": {
+  "eta": 0.1,
+  "gF2_final": 7.910269806144737e-30,
+  "gFt2_final": 1.0162390230383551
+ },
+ "diagquad|linear|wh": {
+  "eta": 0.1,
+  "gF2_final": 7.547301574261018e-30,
+  "gFt2_final": 1.0016963942276789
+ },
+ "diagquad|linear|w": {
+  "eta": 0.1,
+  "gF2_final": 0.8354152673451085,
+  "gFt2_final": 2.3193506473086206e-22
+ },
+ "quad|squares|l2": {
+  "eta": 0.0001,
+  "gF2_final": 0.23881426966441907,
+  "gFt2_final": 0.3186966820838272
+ },
+ "quad|squares|wh": {
+  "eta": 0.0001,
+  "gF2_final": 0.08657460962381208,
+  "gFt2_final": 0.16371094347074833
+ },
+ "quad|squares|w": {
+  "eta": 0.0001,
+  "gF2_final": 0.30901523013792687,
+  "gFt2_final": 0.21737307038687215
+ },
+ "quad|linear|l2": {
+  "eta": 0.01,
+  "gF2_final": 0.17485190151241242,
+  "gFt2_final": 1667.9653362154102
+ },
+ "quad|linear|wh": {
+  "eta": 0.01,
+  "gF2_final": 0.1743231066455791,
+  "gFt2_final": 1665.9873539892715
+ },
+ "quad|linear|w": {
+  "eta": 0.01,
+  "gF2_final": 27.854863063400824,
+  "gFt2_final": 6.2480985283642056e-15
+ },
+ "mushrooms|squares|l2": {
+  "eta": 0.003,
+  "gF2_final": 0.00011482773301810363,
+  "gFt2_final": 0.007368777230444679
+ },
+ "mushrooms|squares|wh": {
+  "eta": 0.01,
+  "gF2_final": 9.428456668481821e-32,
+  "gFt2_final": 0.0069049535593127395
+ },
+ "mushrooms|squares|w": {
+  "eta": 0.03,
+  "gF2_final": 3.6054689053238684,
+  "gFt2_final": 3.191309408179953e-16
+ },
+ "mushrooms|linear|l2": {
+  "eta": 0.1,
+  "gF2_final": 9.632082088366857e-33,
+  "gFt2_final": 0.006190595669272551
+ },
+ "mushrooms|linear|wh": {
+  "eta": 0.1,
+  "gF2_final": 1.9852575575329694e-33,
+  "gFt2_final": 0.006728362505448603
+ },
+ "mushrooms|linear|w": {
+  "eta": 0.1,
+  "gF2_final": 4.033379711956013,
+  "gFt2_final": 1.7446617596799194e-16
+ }
+}

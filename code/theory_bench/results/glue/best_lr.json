@@ -1,0 +1,14 @@
+{
+ "rte|l2": 1e-05,
+ "rte|w": 2e-05,
+ "rte|wh": 3e-05,
+ "mrpc|l2": 1e-05,
+ "mrpc|w": 3e-05,
+ "mrpc|wh": 1e-05,
+ "cola|l2": 1e-05,
+ "cola|w": 2e-05,
+ "cola|wh": 2e-05,
+ "stsb|l2": 1e-05,
+ "stsb|w": 3e-05,
+ "stsb|wh": 1e-05
+}

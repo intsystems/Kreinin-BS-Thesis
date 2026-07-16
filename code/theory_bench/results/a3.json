@@ -1,0 +1,94 @@
+{
+ "runs": [
+  {
+   "cfg": {
+    "kappa": 10,
+    "alpha": 0.9,
+    "gamma": 1.2
+   },
+   "eta": 0.007184048336952618,
+   "tag": "theory",
+   "T": 24519,
+   "rate_emp_per_iter": 0.01781672408067599,
+   "rate_theory_per_iter": 0.0016313776431829906,
+   "ratio_emp_over_theory": 10.921275129107245,
+   "beta_condition_ok": true,
+   "R2_final": 1.280266177583101e-27
+  },
+  {
+   "cfg": {
+    "kappa": 10,
+    "alpha": 0.9,
+    "gamma": 1.2
+   },
+   "eta": 0.05,
+   "tag": "practical",
+   "T": 3522,
+   "rate_emp_per_iter": 0.1272688226390113,
+   "rate_theory_per_iter": 0.011354166666666669,
+   "ratio_emp_over_theory": 11.20899722325237,
+   "beta_condition_ok": true,
+   "R2_final": 2.960101318191519e-29
+  },
+  {
+   "cfg": {
+    "kappa": 10,
+    "alpha": 0.5,
+    "gamma": 2.0
+   },
+   "eta": 0.001261534025374856,
+   "tag": "theory",
+   "T": 241580,
+   "rate_emp_per_iter": 0.005409121761663853,
+   "rate_theory_per_iter": 0.00016557634083044987,
+   "ratio_emp_over_theory": 32.668446074688845,
+   "beta_condition_ok": true,
+   "R2_final": 6.1108377888388564e-27
+  },
+  {
+   "cfg": {
+    "kappa": 10,
+    "alpha": 0.5,
+    "gamma": 2.0
+   },
+   "eta": 0.05,
+   "tag": "practical",
+   "T": 6095,
+   "rate_emp_per_iter": 0.22589967277753498,
+   "rate_theory_per_iter": 0.006562500000000001,
+   "ratio_emp_over_theory": 34.42280728038628,
+   "beta_condition_ok": true,
+   "R2_final": 7.885088235040422e-30
+  },
+  {
+   "cfg": {
+    "kappa": 10,
+    "alpha": 0.2,
+    "gamma": 5.0
+   },
+   "eta": 7.401360544217689e-05,
+   "tag": "theory",
+   "T": 3000000,
+   "rate_emp_per_iter": 0.0007701288789538096,
+   "rate_theory_per_iter": 3.774693877551021e-06,
+   "ratio_emp_over_theory": 204.0241947920451,
+   "beta_condition_ok": true,
+   "R2_final": 1.9120750944184763e-25
+  },
+  {
+   "cfg": {
+    "kappa": 10,
+    "alpha": 0.2,
+    "gamma": 5.0
+   },
+   "eta": 0.003700680272108844,
+   "tag": "practical",
+   "T": 211937,
+   "rate_emp_per_iter": 0.03904666882172817,
+   "rate_theory_per_iter": 0.00018873469387755104,
+   "ratio_emp_over_theory": 206.88654544384516,
+   "beta_condition_ok": true,
+   "R2_final": 1.2934179053193775e-28
+  }
+ ]
+}

@@ -1,0 +1,1 @@
+{"train_loss": [4.168352012145213, 3.450725402587499], "test_acc": [0.1301, 0.1896], "diag": {}, "lr": 0.05, "wd": 0.0005, "mode": "sgd", "seed": 0, "epochs": 2, "beta2": 0.999, "sched": "cosine", "dataset": "cifar100", "model": "resnet18", "best_acc": 0.1896, "final_acc": 0.1896, "wall_s": 12.021655797958374}

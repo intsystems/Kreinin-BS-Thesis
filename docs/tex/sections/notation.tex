@@ -2,13 +2,12 @@
 
 \subsection{Обозначения}
 \begin{itemize}
-    \item Мы использкем $x^i$, где $x$ это вектор и $i \in \overline{1, d}$ обозначает $i$-ю компоненту $d$-мерного вектора $x$.
-    \item Для любых $x, y \in \mathbb{R}^d$ скалярное произведение обозначается, как $\langle x, y \rangle := \sum_{i=1}^d x^i y^i$.
-    \item $L_f$ -- константа липшица функции $f$, то есть $\forall x, y \in \mathbb{R}^d \rightarrow $ 	$f(x) \leq f(y) + \langle \nabla f(y), x-y \rangle + \frac{L_f}{2} \|x - y\|^2$
-    \item $|| x || := \sqrt{\langle x, x \rangle},$ где $x \in \mathbb{R}^d$ это $l_2$ норма вектора $x$.
-    \item $|| x ||_A^2 := x^TAx$, где $x \in \mathbb{R}^d, A \in \mathbb{R}^{d \times d}$
-    \item Для матрицы $A \in \mathbb{R}^{d \times d}$, $A^{-1}$ -- обратная матрица.
-    \item Мы используем $A \preccurlyeq B$ для двух матриц $A, B \in \mathbb{R}^{d \times d}$, чтобы обозначить что $x^TAx \le x^TBx$ для любых $x \in \mathbb{R}^d$.
-    \item $\textrm{diag} \left\{ \beta_1 \ldots, \beta_d \right\}$ -- диагональная матрица, состоящая из элементов: $\beta_1, ..., \beta_d \in \mathbb{R}.$
-    
+    \item Мы используем $w^i$ для обозначения $i$-й компоненты вектора $w \in \mathbb{R}^d$, где $i \in \overline{1, d}$.
+    \item Для любых $x, y \in \mathbb{R}^d$ скалярное произведение обозначается как $\langle x, y \rangle := \sum_{i=1}^d x^i y^i$.
+    \item $L_f$ --- константа гладкости функции $f$, то есть константа Липшица её градиента: $\|\nabla f(x) - \nabla f(y)\| \le L_f \|x - y\|$ для всех $x, y \in \mathbb{R}^d$.
+    \item $\|x\| := \sqrt{\langle x, x \rangle}$ --- $\ell_2$-норма вектора $x \in \mathbb{R}^d$.
+    \item $\|x\|_A^2 := x^T A x$, где $x \in \mathbb{R}^d$, а $A \in \mathbb{R}^{d \times d}$ --- симметричная положительно определённая матрица; $\|x\|_A^* := \sqrt{x^T A^{-1} x}$ --- сопряжённая к ней норма.
+    \item Для матрицы $A \in \mathbb{R}^{d \times d}$ через $A^{-1}$ обозначается обратная матрица, через $\|A\|_2$ --- спектральная норма; для диагональной матрицы $A$ полагаем $\|A\|_\infty := \max_i |A_{ii}|$.
+    \item Мы используем $A \preccurlyeq B$ для двух матриц $A, B \in \mathbb{R}^{d \times d}$, чтобы обозначить, что $x^TAx \le x^TBx$ для любых $x \in \mathbb{R}^d$.
+    \item $\textrm{diag} \left\{ \beta_1, \ldots, \beta_d \right\}$ --- диагональная матрица с элементами $\beta_1, \ldots, \beta_d \in \mathbb{R}$.
 \end{itemize}

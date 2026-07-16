@@ -1,10 +1,15 @@
-numpy
-pytorch
+# Стенд экспериментов (Python 3.10+). PyTorch ставится под вашу CUDA, например:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+torch>=2.6
+torchvision>=0.21
 numpy
 scipy
-wandb
-math
-pandas
-tqdm
+scikit-learn
 matplotlib
-sklearn
+pandas
+# ярус C (GLUE, GPT-2)
+transformers
+datasets
+tiktoken
+# ноутбуки
+jupyter

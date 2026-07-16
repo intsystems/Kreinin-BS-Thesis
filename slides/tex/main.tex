@@ -1,55 +1,35 @@
 \documentclass[aspectratio=169, 12pt]{beamer}
 % packages
-\usepackage{multicol}
 \usepackage[T2A]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[english,russian]{babel}
 \usepackage{booktabs}
-\usepackage{biblatex}
 \usepackage{graphicx}
-\usepackage{href-ul}
 \usepackage{cmap}
-\usepackage{svg}
-
-\usepackage{lipsum}
-
-\usepackage{icomma}
 \usepackage{amsthm}
-\usepackage{graphicx}
 \usepackage{amssymb}
 \usepackage{amsmath}
-\usepackage{graphicx}
 \usepackage{color}
-%\usepackage{bm}
-\usepackage{tabularx}
-\usepackage{url}
-\usepackage{multirow}
-\usepackage{wrapfig}
-\usepackage{caption}
-\usepackage{subcaption}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
-%% Цвета 
-%\usepackage{color}
-%\usepackage{colortbl}
 
-% Создаем новую команду для assumptions
-\newtheorem{assumption_rus}{Предположение}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+% Русские окружения для утверждений: теоремы нумеруются (1--4, как в дипломе),
+% леммы именуются без номеров
+\setbeamertemplate{theorems}[numbered]
 \newtheorem{theorem_rus}{Теорема}
-\newtheorem{lemma_rus}{Лемма}
+\newtheorem*{lemma_rus}{Лемма}
 
-
-%beamer  theme's used to be here :)
-%\usetheme{mipt_beamer}
 \usetheme{boxes}
 \beamertemplatenavigationsymbolsempty
 \setbeamertemplate{footline}[page number]
 %----------------------------------------------------------------------------------------------------------
 
 %%%
-\title[\hbox to 56mm{Feature}]{Методы с предобуславливанием и затуханием весов}
+\title[Предобуславливание с затуханием весов]{Методы предобуславливания с затуханием весов}
 \subtitle{\textcolor{black}{Выпускная квалификационная работа бакалавра}}
-\author[М.\,К.~Крейнин]{
+\author[М.\,В.~Крейнин]{
     Матвей Вадимович Крейнин\\
     Научный руководитель: к.ф.-м.н. А.\,Н.~Безносиков
 }
@@ -65,274 +45,348 @@
 
 \begin{document}
 \maketitle
-\begin{frame}{Методы с предобуславливанием и затуханием весов}
-    Исследуется сходимость методов оптимизации с предобуславливанием и затуханием весов.
+
+\begin{frame}{Методы предобуславливания с затуханием весов}
+    Исследуется сходимость методов оптимизации с предобуславливанием (Adam, OASIS), использующих регуляризацию с затуханием весов.
     \begin{block}{Проблема}
         \vspace{-0.15cm}
-        Исследование скорости сходимости методов оптимизации с предобуславливанием.
+        К решению какой задачи и с какой скоростью сходятся методы с предобуславливанием при разных способах добавления регуляризации.
     \end{block}
     \begin{block}{Цель}
         \vspace{-0.15cm}
-        Оценить скорость сходимости данных методов и предложить альтернативный вариант добавления регуляризации.
+        Доказать оценки скорости сходимости (в детерминированной и стохастической постановках), охарактеризовать предельную точку, исследовать новый способ добавления регуляризации и проверить теорию экспериментально.
     \end{block}
 \end{frame}
 
 \begin{frame}{Постановка задачи}
-     \begin{columns}[t]
-    \begin{column}{0.48\textwidth}
-        \vspace{-0.5cm}
-        \begin{block}{Классическое решение}
-        \begin{equation}
-        \label{eq:general}
-            \min_{w \in \mathbb{R}^d} f(w)
-        \end{equation} 
-        \end{block}
-        \textbf{Метод градиентного спуска}
+\begin{block}{Задача обучения}
+    \vspace{-0.4cm}
+    \begin{equation*}
+        \min_{w \in \mathbb{R}^d} f(w)
+    \end{equation*}
+    \vspace{-0.5cm}
+\end{block}
+\vspace{0.3cm}
+\small
+\begin{columns}[t]
+    \begin{column}{0.47\textwidth}
+        \textbf{Градиентный спуск:}
         \begin{equation*}
-            w_t = w_{t-1} - \eta \nabla f(w_t).
+            w_{t+1} = w_t - \eta \nabla f(w_t).
         \end{equation*}
-        \textbf{Метод Ньютона}:
+        \textbf{Метод Ньютона:}
         \begin{equation*}
-            w_t = w_{t_-1} - \eta \left( \nabla^2 f(w_{t-1}) \right)^{-1} \nabla f(w_{t-1})
+            w_{t+1} = w_t - \eta \left( \nabla^2 f(w_t) \right)^{-1} \nabla f(w_t).
         \end{equation*}
     \end{column}
-    \hspace{0.5cm}
+    \hspace{0.2cm}
     \vrule
-    \hspace{0.5cm}
-    \begin{column}{0.48\textwidth}
-        \vspace{-0.5cm}
-        \begin{block}{Метод стохастического градиента}
+    \hspace{0.2cm}
+    \begin{column}{0.47\textwidth}
+        \textbf{Стохастический градиент:}
         \begin{equation*}
-            w_{t+1} = w_t - \eta g_t,
+            w_{t+1} = w_t - \eta g_t, \qquad \mathbb{E}\left[g_t\right] = \nabla f(w_t).
         \end{equation*}
-        $g_t$ - несмещённый стохастический градиент
-        \end{block}
-        
-        \begin{block}{Методы с предобуславливанием}
+        \textbf{С предобуславливанием:}
         \begin{equation*}
-            w_{t+1} = w_t - \eta D_t^{-1}g_t,
+            w_{t+1} = w_t - \eta D_t^{-1}g_t.
         \end{equation*}
-        $D_t$ -- матрица предобуславливания.
-        \end{block}
     \end{column}
 \end{columns}
+\vspace{0.4cm}
+$D_t$ --- диагональная матрица предобуславливания: Adam строит её по квадратам стохастических градиентов, OASIS --- по оценке диагонали гессиана.
 \end{frame}
 
-\begin{frame}[shrink]{Новая минимизируемая функция}
-\begin{equation*}
-        \min_{w \in \mathbb{R}^d} F(w) := f(w) + r(w), \text{$r(w)$ это функция регуляризации.}
-\end{equation*}
-
-
+\begin{frame}[shrink=5]{Три способа добавления регуляризации}
+Регуляризованная задача: $\min\limits_{w \in \mathbb{R}^d} F(w) := f(w) + r(w)$, \quad $r$ --- функция регуляризации.
+\vspace{-0.15cm}
 \begin{algorithm}[H]
     \caption{Способы использования предобуславливания с регуляризацией}
     \label{alg:precond}
-    
     \begin{algorithmic}
-            \Require{$\eta$ $-$ шаг обучения, $f$ $-$ оптимзируемая функция}
-            
-            \While {$w$ не сойдется}
+            \footnotesize
+            \Require{$\eta$ --- шаг обучения, $f$ --- функция потерь, $r$ --- регуляризатор, $w_0$ --- начальная точка}
+            \While {$w$ не сойдётся}
             \State $t = t+1$
-            \State $g_t \gets$ стохастический градиент $f$
-            \State $\textcolor{blue}{g_t \gets g_t + \nabla r(w_t)}$ \hfill \textcolor{blue}{обычная регуляризация}
-            \State $D_t \gets$ матрица предобуславливания с помощью $g_t$
-
-            \State \textcolor{blue}{$w_t \gets w_{t-1} - \eta \cdot D_t^{-1}g_t $} \hfill \textcolor{blue}{обычная регуляризация}, 
-            \State \textcolor{orange}{$w_t \gets w_{t-1} - \eta \cdot D_t^{-1} \left(g_t +\nabla r(w_t) \right)$} \hfill \textcolor{orange}{масштабированное затухание весов}, 
-            \State \textcolor{red}{$w_t \gets w_{t-1} - \eta \cdot D_t^{-1} g_t  - \eta \cdot \nabla r(w_t)$} \hfill \textcolor{red}{затухание весов}, 
+            \State $g_t \gets$ стохастический градиент $f$ в точке $w_{t-1}$
+            \State $\textcolor{blue}{g_t \gets g_t + \nabla r(w_{t-1})}$ \hfill \textcolor{blue}{обычная регуляризация (L2)}
+            \State $D_t \gets$ матрица предобуславливания, построенная по $g_t$
+            \State \textcolor{blue}{$w_t \gets w_{t-1} - \eta \cdot D_t^{-1}g_t $} \hfill \textcolor{blue}{обычная регуляризация (L2)}
+            \State \textcolor{orange}{$w_t \gets w_{t-1} - \eta \cdot D_t^{-1} \left(g_t +\nabla r(w_{t-1}) \right)$} \hfill \textcolor{orange}{масштабированное затухание весов (WH)}
+            \State \textcolor{red}{$w_t \gets w_{t-1} - \eta \cdot D_t^{-1} g_t  - \eta \cdot \nabla r(w_{t-1})$} \hfill \textcolor{red}{затухание весов (W)}
             \EndWhile
     \end{algorithmic}
 \end{algorithm}
+\vspace{-0.1cm}
+\footnotesize{\textcolor{orange}{Масштабированное затухание весов (WH)} --- новый, промежуточный способ: $D_t$ строится без регуляризатора, но $\nabla r$ масштабируется матрицей $D_t^{-1}$.}
 \end{frame}
 
-\begin{frame}{Альтернативный взгляд}
-
-Вынесем $D_t^{-1}$ за скобки и получим новый градиент:
+\begin{frame}{Альтернативный взгляд: изменённая задача}
+Вынесем $D_t^{-1}$ за скобки в шаге затухания весов:
 \begin{equation*}
-    w_{t+1} = w_t - \eta D_t^{-1}(\nabla f(w_t) + D_t \nabla r(w_t))
+    w_{t+1} = w_t - \eta D_t^{-1}(\nabla f(w_t) + D_t \nabla r(w_t)).
 \end{equation*}
-Новая функция регуляризации $\nabla \tilde{r}(w) = D_t \nabla r(w)$.
-
-
-Задача минимизации, которая решается непосредственно:
+Введём $\widetilde{r}_t$ с $\nabla \widetilde{r}_t(w) = D_t \nabla r(w)$. Метод делает шаг по градиенту функции
 \begin{equation*}
 \label{F_tilde}
-    \min_{w \in \mathbb{R}^d} \tilde{F}(w) := f(w) + \tilde{r}(w)
+    \widetilde{F}_t(w) := f(w) + \widetilde{r}_t(w),
 \end{equation*}
-где $\tilde{F}(w)$ изменяется на каждом шаге.
+которая меняется на каждой итерации вместе с $D_t$.
+\begin{lemma_rus}[существование $\widetilde{r}_t$]
+    Если $r$ сепарабелен, а $D_t$ диагональна, то $\widetilde{r}_t$ существует:
+    $\widetilde{r}_t(w) = \sum_{i=1}^d d_t^i \, r_i(w^i)$.
+\end{lemma_rus}
+\begin{lemma_rus}[$L$-гладкость $\widetilde{r}_t$]
+    Если вдобавок $r$ является $L_r$-гладким, а $\alpha I \preccurlyeq D_t \preccurlyeq \Gamma I$, то $\widetilde{r}_t$ является $\Gamma L_r$-гладкой, а $\widetilde{F}_t$ --- $\widetilde{L}$-гладкой с $\widetilde{L} = L_f + \Gamma L_r$.
+\end{lemma_rus}
 \end{frame}
 
-\begin{frame}{Предположения на функции}
-
+\begin{frame}{Предположения}
 \begin{columns}[t]
-    \begin{column}{0.48\textwidth}
-        \vspace{-0.5cm}
-        \begin{assumption_rus}[Структура регулязитора]
-    \label{ass:regstruct}
-    Регуляризатор $r$ сепарабелен:
-    $$r(w) = \sum_{i=1}^d r_i(w^i),$$
-    где $r_i(x) \ge 0$ для $i \in \overline{1, d}$ и $x \in \mathbb{R}$.
-\end{assumption_rus}
-\begin{assumption_rus}[Сильная выпуклость]
-    \label{ass:muconvex}
-    $\exists \mu_f : \forall x, y \in \mathbb{R}^d$ выполняется:
-    $$
-    f(y) \geq f(x) + \langle \nabla f(x), y-x \rangle + \frac{\mu_f}{2} ||x-y||_2^2.
-    $$
-\end{assumption_rus}
+    \begin{column}{0.47\textwidth}
+        \vspace{-0.4cm}
+        \begin{block}{1. Структура регуляризатора}
+            $r$ сепарабелен: $r(w) = \sum_{i=1}^d r_i(w^i)$, где $r_i(x) \ge 0$.
+        \end{block}
+        \begin{block}{2. Диагональность $D_t$}
+            $D_t = \textrm{diag} \left\{ d_t^1, \ldots, d_t^d \right\}$.
+        \end{block}
+        \begin{block}{3. Ограниченность $D_t$}
+            $\exists\, 0 < \alpha < \Gamma$: $\alpha I \preccurlyeq D_t \preccurlyeq \Gamma I$.
+        \end{block}
     \end{column}
-    \hspace{0.5cm}
+    \hspace{0.2cm}
     \vrule
-    \hspace{0.5cm}
-    \begin{column}{0.48\textwidth}
-        \vspace{-0.5cm}
-\begin{assumption_rus}[Структура матрицы предобуславливания]
-    \label{ass:precondstruct}
-    Матрица предобуславливания $D_t$ может быть представлена в следующем виде:
-     $D_t = \textrm{diag} \left\{ d_t^1 \ldots, d
-_t^d \right\}.$
-\end{assumption_rus}
-\begin{assumption_rus}[Ограниченность предобуславливателя]
-\label{ass:preconditioned}
-$\exists$ $\alpha, \Gamma \in \mathbb{R} : 0 < \alpha < \Gamma$:
-\begin{equation*}
-\alpha I \preccurlyeq D_t \preccurlyeq \Gamma I \Leftrightarrow \frac{I}{\Gamma} \preccurlyeq D_t^{-1} \preccurlyeq \frac{I}{\alpha}.
-\end{equation*}
-\end{assumption_rus}
-    \end{column}
-\end{columns}
-
-
-\end{frame}
-
-\begin{frame}{Предположения на функции}
-     \begin{columns}[t]
-    \begin{column}{0.48\textwidth}
-        \vspace{-0.6cm}
-        \begin{assumption_rus}[$L$-гладкость]
-\label{ass:smoothness}
-
-    Градиент функции $f$ является $L_f$-гладким, $\exists$ $L_f > 0:$ $\forall x, y \in \mathbb{R}^d$,
-    	\begin{equation*}
-    		f(x) \leq f(y) + \langle \nabla f(y), x-y \rangle + \frac{L_f}{2} \|x - y\|^2.
-    	\end{equation*}
-     \end{assumption_rus}
-     \begin{assumption_rus}[$L$-гладкость]
-    Градиент функции $r$ является $L_r$-гладким, $\exists$ $L_r > 0:$ $\forall x, y \in \mathbb{R}^d$,
-	\begin{equation*}
-		r(x) \leq r(y) + \langle \nabla r(y), x-y \rangle + \frac{L_r}{2} ||x - y||^2.
-	\end{equation*}
-\end{assumption_rus}
-    \end{column}
-    \hspace{0.5cm}
-    \vrule
-    \hspace{0.8cm}
-    \begin{column}{0.48\textwidth}
-    \vspace{-0.5cm}
-        \begin{assumption_rus}[Ограниченность регуляризатора]
-\label{ass:regbound}
-Регуляризатор ограничен, $\exists$ $\Omega > 0:$ \\ 
-$\forall w \in \mathbb{R}^d$ выполняется $ |r(w)| \le \Omega.$
-\end{assumption_rus}
-\begin{assumption_rus}[Ожидания]
-$g_t$ являются несмещенными и имеют ограниченную вариацию на любом шаге, то есть
-\begin{equation*}
-\mathbb{E}\left[ g_t \right] = \nabla f (w_t), \mathbb{E}\left[ ||g_t - \nabla f||^2 \right] \leq \sigma^2,
-\end{equation*}
-\label{ass:expectations}
-\end{assumption_rus}
+    \hspace{0.2cm}
+    \begin{column}{0.47\textwidth}
+        \vspace{-0.4cm}
+        \begin{block}{4. $L$-гладкость $f$ и $r$}
+            Градиенты $f$ и $r$ липшицевы с константами $L_f$ и $L_r$.
+        \end{block}
+        \begin{block}{5. Ограниченность $r$}
+            $|r(w)| \le \Omega$ --- только для невыпуклого случая (теоремы~1 и~3).
+        \end{block}
+        \begin{block}{6. Сильная выпуклость $f$}
+            Только для теорем 2 и 4: $\exists \mu_f > 0$ такое, что $\forall x, y$
+            \vspace{-0.15cm}
+            {\footnotesize
+            \begin{equation*}
+                f(y) \geq f(x) + \langle \nabla f(x), y-x \rangle + \tfrac{\mu_f}{2} \|x-y\|^2 .
+            \end{equation*}}
+        \end{block}
     \end{column}
 \end{columns}
 \end{frame}
-\begin{frame}{Леммы}
-    \begin{lemma_rus}[Существование $\widetilde{r}$]
-\label{lemma:existence}
-    Предполагая, что \ref{ass:regstruct}, \ref{ass:precondstruct} выполняются, функция $\widetilde{r}$ существует и имеет следующую форму:
-    $$\widetilde{r}_t(w) = \sum_{i=1}^d d_t^i r_i(w_i)$$
-\end{lemma_rus}
 
-\begin{lemma_rus}\label{lemma:tildesmoothness}{(L-гладкость $\widetilde{r}$)}
-Предполагая, что \ref{ass:regstruct}, \ref{ass:precondstruct}, \ref{ass:smoothness}, \ref{ass:preconditioned} выполняются,
-градиент $\widetilde{r}$ является $L_{\tilde{r}}$-непрерывным, 
-то есть существует константа  $L_{\tilde{r}} > 0$ такая, что $\forall x, y \in \mathbb{R}^d$,
+\begin{frame}{Эволюция матрицы предобуславливания}
+\small
+Два правила обновления с параметром импульса $\beta \in [0,1]$ и срезкой $\hat{D}_{t+1}^{ii} = \max \{ \alpha, |D_{t+1}^{ii}| \}$:
 \begin{equation*}
-    		\widetilde{r}_t(x) \leq \widetilde{r}_t(y) + \langle \nabla \widetilde{r}_t(y), x-y \rangle + \frac{L_{\tilde{r}}}{2} ||x - y||^2,
-    	\end{equation*}
-     и $L_{\tilde{r}} = \Gamma L_r$.
-\end{lemma_rus}
-\end{frame}
-
-\begin{frame}{Теоремы}
-    \begin{theorem_rus} 
-    \label{theor:1}
-    Предполагая, что \ref{ass:regstruct}, \ref{ass:precondstruct}, \ref{ass:smoothness}, \ref{ass:regbound}, \ref{ass:preconditioned} выполняются, положим ошибку $\varepsilon > 0$ и шаг обучения удовлетворяют условию: $\eta < \frac{2 \alpha}{L_f + \Gamma L_{r}}$.
-    Количество итераций, начиная с начальной точки $w_0 \in \mathbb{R}^d$ , $\Delta_0 = \tilde{F}_0(w_0) - f^*$, где $\widetilde{F}_t$ определено в \eqref{F_tilde} и $f^*$ решением задачи \eqref{eq:general}, 
-    необходимое для $\varepsilon$-приближения нормы градиента к 0, может быть ограничено количеством шагов    
+    \underbrace{(D_{t+1})^2 = \beta (D_t)^2 + (1 - \beta) (H_t)^2}_{\text{квадраты: Adam, RMSProp}}, \qquad
+    \underbrace{D_{t+1} = \beta D_t + (1 - \beta) H_t}_{\text{первые степени: OASIS}}.
+\end{equation*}
+\begin{lemma_rus}[эволюция $D_t$]
+    \small
+    Пусть $H_t$ диагональны, $|H_t^{ii}| \le \Gamma$, для $\hat D_0$ выполнены предположения 2--3. Тогда предположения 2--3 выполняются для $\hat{D}_t$ при всех $t$ и
+    \vspace{-0.1cm}
     \begin{equation*}
-      T = \mathcal{O}\left( \frac{\Delta_0 \Gamma}{(\eta - \frac{\tilde{L}\eta^2}{2\alpha}) \left( \varepsilon -\frac{\delta\Gamma}{\eta - \frac{\tilde{L}\eta^2}{2\alpha}}\right)} \right),
-\end{equation*}
-$\widetilde{L} = L_f + \Gamma L_{r}$ и $\delta=\frac{(1 - \beta)\Gamma^2}{2\alpha}$ выбирается сколь угодно благодаря $\alpha, \beta, \Gamma$. 
-\end{theorem_rus}
+        \|\hat{D}_{t+1} - \hat{D}_t\|_\infty \le \rho_\beta := \begin{cases}
+            \frac{(1 - \beta)\Gamma^2}{2\alpha} & \text{для квадратов,} \\
+            2(1 - \beta)\Gamma & \text{для первых степеней.}
+        \end{cases}
+    \end{equation*}
+\end{lemma_rus}
+При $\beta \to 1$ имеем $\rho_\beta \to 0$: дрейф изменённой задачи $\widetilde{F}_t$ контролируем; именно $\rho_\beta$ входит в остаточные члены всех четырёх теорем.
 \end{frame}
 
-\begin{frame}{Теоремы}
+\begin{frame}{К какому решению сходится метод}
+Методы с затуханием весов сходятся не к решению $w^*$ исходной задачи $\min_w F(w)$, а к решению $\widetilde{w}^*_t = \argmin_w \widetilde{F}_t(w)$ изменённой задачи.
+\begin{lemma_rus}[нижняя оценка расстояния между решениями]
+    \small
+    Пусть выполнены предположения 1, 2, 4, исходная задача имеет решение $w^*$, а изменённая задача при фиксированном $t$ --- решение $\widetilde{w}^*_t$. Тогда
+    \begin{equation*}
+        L_F \, \|\widetilde{w}^*_t - w^* \| \geq \| (I - D_t)\, \nabla r (\widetilde{w}^*_t)\|,
+        \qquad L_F = L_f + L_r.
+    \end{equation*}
+\end{lemma_rus}
+\begin{itemize}
+    \small
+    \item Решения различаются тем сильнее, чем дальше $D_t$ от единичной матрицы; при $D_t = I$ правая часть обращается в нуль.
+    \item Механизм: эффективный покоординатный штраф $\lambda d_t^i$ мал там, где градиенты малы, --- затухание весов почти не штрафует <<редкие>> координаты.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Сходимость: невыпуклый детерминированный случай}
     \begin{theorem_rus}
-    Преполагая, что \ref{ass:regstruct}, \ref{ass:precondstruct}, \ref{ass:smoothness}, \ref{ass:regbound}, \ref{ass:preconditioned}, \ref{ass:muconvex} выполняются, положим ошибку $\varepsilon > 0$ и шаг обучения удовлетворяют условию: 
-    $$
-    \eta < \eta_{min} = \min \left\{ \frac{2L_f \Omega_0^2}{\alpha \beta^2}; \frac{\alpha}{4L_f}; \frac{8\mu_f L_f^2 \Omega_0^4}{\alpha^2 \beta^4} + \frac{L_f \Omega_0^2}{\alpha \beta^2} \right\},
-    $$ гиперпараметры удовлетворяют условиям: $\lambda < \frac{\alpha \beta^2}{8L_f \Omega_0^2}$, $\beta \geq 1 - \frac{\eta(\mu_f + \lambda)\alpha}{2 \Gamma^2}$. Получаем оценку на необходимое количество шагов для сходимости алгоритма к заданной точности:
-    $$T = \mathcal{O} \left(\log\left(\frac{R_0^2 + \frac{8\lambda \Omega_0^2 \Gamma^2}{\alpha^2(\mu_f+\lambda)} \sigma_0^2}{\varepsilon} \right) \frac{4}{\eta_{min} (\mu_f + \lambda)\cdot \min \left\{1; \frac{2\alpha}{\Gamma^2} \right\} } \right)$$
+    \label{theor:1}
+    \small
+    Пусть выполнены предположения 1--5, $g_t = \nabla f(w_t)$, матрица обновляется по условиям леммы об эволюции $D_t$, а шаг удовлетворяет $\eta < \frac{2 \alpha}{\widetilde{L}}$, $\widetilde{L} = L_f + \Gamma L_{r}$. Обозначим $\Delta_0 = \widetilde{F}_0(w_0) - f^*$ и $\delta := \Omega \rho_\beta$. Тогда для любой точности $\varepsilon > \frac{\delta\Gamma}{\eta - \widetilde{L}\eta^2/(2\alpha)}$ число итераций до $\min\limits_{0 \le t \le T} \|\nabla\widetilde{F}_t(w_t)\|^2 \leq \varepsilon$ ограничено величиной
+    \vspace{-0.1cm}
+    \begin{equation*}
+      T = \mathcal{O}\left( \frac{\Delta_0 \Gamma}{(\eta - \frac{\widetilde{L}\eta^2}{2\alpha}) \left( \varepsilon -\frac{\delta\Gamma}{\eta - \frac{\widetilde{L}\eta^2}{2\alpha}}\right)} \right).
+    \end{equation*}
 \end{theorem_rus}
+\begin{itemize}
+    \small
+    \item Скорость $\mathcal{O}(1/T)$ по квадрату нормы градиента \emph{изменённой} функции $\widetilde{F}_t$.
+    \item Порог $\delta = \Omega\rho_\beta \propto (1-\beta)$ --- цена нестационарности $\widetilde{F}_t$; выбором $\beta \to 1$ делается сколь угодно малым.
+\end{itemize}
 \end{frame}
 
-\begin{frame}{AdamW}
+\begin{frame}{Сходимость: сильно выпуклый случай}
+    \begin{theorem_rus}
+    \label{theor:2}
+    \small
+    Пусть выполнены предположения 2--4, 6, $r(w) = \frac{\lambda}{2}\|w\|^2$, $g_t = \nabla f(w_t)$. Обозначим $\widetilde{\mu} = \mu_f + \lambda\alpha$, $\widetilde{L} = L_f + \lambda\Gamma$, $\Omega_0 = \|\nabla f(0)\|/\widetilde{\mu}$, $R_t^2 = \|w_t - \widetilde{w}^*_t\|^2_{D_t}$. Пусть
+    $0 < \eta \le \frac{\widetilde{\mu}\alpha^2}{\Gamma \widetilde{L}^2}$ и $\rho_\beta \le \frac{\eta\widetilde{\mu}\alpha}{4\Gamma}$. Тогда для всех $T \ge 1$
+    \vspace{-0.1cm}
+    \begin{equation*}
+        R_T^2 \le \left(1 - \frac{\eta\widetilde{\mu}}{4\Gamma}\right)^T R_0^2 + \frac{64\,\Gamma^3\lambda^2\Omega_0^2}{\eta^2\widetilde{\mu}^4}\,\rho_\beta^2 .
+    \end{equation*}
+\end{theorem_rus}
+\begin{itemize}
+    \small
+    \item Линейная скорость: $R_T^2 \le \varepsilon$ за $T = \mathcal{O}\left(\frac{\Gamma}{\eta\widetilde{\mu}}\log\frac{R_0^2}{\varepsilon}\right)$ итераций при подходящем $\beta$.
+    \item Сходимость к $\widetilde{w}^*_t$ --- \emph{движущейся} цели, а не к $w^*$ (согласовано с леммой о нижней оценке).
+    \item Остаток $\propto \rho_\beta^2$ исчезает при $\beta \to 1$ или замороженной $D_t$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Сходимость: стохастический случай}
+\footnotesize
+Стохастический градиент: $\mathbb{E}[ g_t \mid \mathcal{F}_t ] = \nabla f (w_t)$, $\mathbb{E}[ \|g_t - \nabla f(w_t)\|^2 \mid \mathcal{F}_t ] \leq \sigma^2$, матрица $D_t$ предсказуема ($\mathcal{F}_t$-измерима, <<запаздывающий>> предобуславливатель).
+    \vspace{-0.1cm}
+    \begin{theorem_rus}[невыпуклый случай]
+    \label{theor:3}
+    \footnotesize
+    В условиях теоремы 1 со стохастическим градиентом и $0 < \eta \le \frac{\alpha^2}{\Gamma \widetilde{L}}$:
+    \vspace{-0.2cm}
+    \begin{equation*}
+        \min_{0 \le t \le T} \mathbb{E}\|\nabla \widetilde{F}_t (w_t) \|^2 \;\le\; \underbrace{\frac{2\Gamma\Delta_0}{\eta (T+1)}}_{\text{оптимизация}} \;+\; \underbrace{\frac{\Gamma \widetilde{L} \eta \sigma^2}{\alpha^2}}_{\text{шум}} \;+\; \underbrace{\frac{2\Gamma\delta}{\eta}}_{\text{дрейф}}.
+    \end{equation*}
+    \vspace{-0.35cm}
+\end{theorem_rus}
+    \begin{theorem_rus}[сильно выпуклый случай]
+    \label{theor:4}
+    \footnotesize
+    В условиях теоремы 2 со стохастическим градиентом:
+    \vspace{-0.2cm}
+    \begin{equation*}
+        \mathbb{E} \left[ R_T^2 \right] \le \left(1 - \frac{\eta\widetilde{\mu}}{4\Gamma}\right)^T R_0^2 \;+\; \underbrace{\frac{8\Gamma\eta\sigma^2}{\widetilde{\mu}\alpha}}_{\text{шумовой шар}} \;+\; \frac{64\,\Gamma^3\lambda^2\Omega_0^2}{\eta^2\widetilde{\mu}^4}\,\rho_\beta^2 .
+    \end{equation*}
+    \vspace{-0.35cm}
+\end{theorem_rus}
+\vspace{-0.1cm}
+При оптимальном шаге теорема 3 даёт $\mathcal{O}(1/\sqrt{T})$ --- порядок скорости SGD в невыпуклом случае.
+\end{frame}
+
+\begin{frame}{Практические алгоритмы: семейство Adam}
     \begin{algorithm}[H]
-            \caption{Adam}\label{alg:genAdam}    
+            \caption{Различные способы добавления регуляризации для Adam}\label{alg:genAdam}
             \begin{algorithmic}
-            \small{
-            \Require{$\eta, \beta_1, \beta_2, \epsilon, f, r$}
-            %\State $m_0 = 0$ -- 1-st moment vector
-            %\State$v_0 = 0$ -- 2-nd moment vector
-            \While {$\theta$ not converged}
+            \footnotesize{
+            \Require{$\eta, \beta_1, \beta_2, \epsilon$ --- гиперпараметры, $f$ --- функция потерь, $r$ --- регуляризатор, $w_0$}
+            \State $m_0 = 0$, $v_0 = 0$, $t = 0$
+            \While {$w$ не сойдётся}
             \State $t = t+1$
             \State $g_t = \nabla f(w_{t-1}) + $ \textcolor{blue}{$\nabla r(w_{t-1})$}\hfill \textcolor{blue}{AdamL2}
             \State $m_t = \beta_1 \cdot m_{t-1} + (1 - \beta_1) \cdot g_t$
             \State $v_t = \beta_2 \cdot v_{t-1} + (1 - \beta_2) \cdot g_t^2$
-            \State $\hat{m_t} = \frac{m_t}{1-\beta_1^t} +$ \textcolor{orange}{$\nabla r(w_{t-1})$} \hfill \textcolor{orange}{AdamWH}
-            \State $\hat{v_t} = \frac{v_t}{1-\beta_2^t}$ 
-            \State $w_t = w_{t-1} - \eta \cdot \frac{\hat{m_t}}{\sqrt{v_t} + \epsilon} - $ \textcolor{red}{$\eta \nabla r(w_{t-1})$ } \hfill \textcolor{red}{AdamW}
+            \State $\hat{m}_t = \frac{m_t}{1-\beta_1^t} +$ \textcolor{orange}{$\nabla r(w_{t-1})$} \hfill \textcolor{orange}{AdamWH}
+            \State $\hat{v}_t = \frac{v_t}{1-\beta_2^t}$
+            \State $w_t = w_{t-1} - \eta \cdot \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon} - $ \textcolor{red}{$\eta \nabla r(w_{t-1})$ } \hfill \textcolor{red}{AdamW}
             \EndWhile
             }
 \end{algorithmic}
 \end{algorithm}
+\footnotesize{Аналогично строится семейство OASIS (OASISL2, OASISWH, OASISW), в котором $D_t$ --- стохастическая оценка диагонали гессиана.}
 \end{frame}
 
-\begin{frame}{Эксперименты}
-\begin{figure}[H]
-\begin{minipage}[h]{0.49\linewidth}
+\begin{frame}{Масштабированное затухание весов (WH): свойства}
+\begin{itemize}
+    \small
+    \item \textbf{Стационарная точка} --- решение $w^*$ \emph{исходной} задачи: условие $\hat D_t^{-1}(\nabla f + \nabla r) = 0$ эквивалентно $\nabla F = 0$; при этом регуляризатор не искажает $D_t$ (в отличие от L2).
+    \item \textbf{Порог устойчивости}: на координатах с малым градиентом $\hat D_t$ упирается в срезку $\alpha$, эффективный шаг по регуляризатору возрастает до $\eta\lambda/\alpha$; необходимое условие устойчивости: $\eta\lambda/\alpha < 2$.
+\end{itemize}
+\vspace{-0.1cm}
+\begin{table}
 \centering
-\includegraphics[width=\linewidth]{fig1.jpg}
-\caption{Adam and AdamW по критерию, $||\nabla F(w)|| = ||\nabla f(w) + \nabla r(w)||$}
-\label{fig:adams_errors}
-\end{minipage}
-\hfill
-\begin{minipage}[h]{0.49\linewidth}
-\includegraphics[width=\linewidth]{fig2.jpg}
-\caption{Adam and AdamW по критерию, $||\nabla \tilde{F}(w)|| = ||\nabla f(w) + \nabla \tilde{r}(w)||$}
-\label{fig:adams_special_errors}
-\end{minipage}
+\footnotesize
+\begin{tabular}{lccc}
+\toprule
+$\alpha$ & $\eta\lambda/\alpha$ & Предсказание ($>2$ --- расходимость) & Наблюдение \\
+\midrule
+$10^{-8}$ & $3\cdot10^{5}$ & расходится & расходится \\
+$10^{-4}$ & $30$ & расходится & расходится \\
+$3\cdot10^{-3}$ & $1$ & устойчив & устойчив \\
+$10^{-1}$ & $0.03$ & устойчив & устойчив \\
+\bottomrule
+\end{tabular}
+\end{table}
+\vspace{-0.15cm}
+\small{Практический вывод: WH требует $\alpha \gtrsim \eta\lambda$; с ростом масштаба задачи рабочее окно $\lambda$ сужается (на предобучении языковых моделей --- исчезает).}
+\end{frame}
+
+\begin{frame}{Эксперименты: малые задачи (проверка теории)}
+\vspace{-0.15cm}
+\begin{figure}
+\centering
+\includegraphics[width=0.66\linewidth]{fig_main_adam.png}
 \end{figure}
+\vspace{-0.35cm}
+\footnotesize{Семейство Adam, логистическая регрессия (\texttt{mushrooms}): у AdamW $\|\nabla F\|^2$ стабилизируется, а $\|\nabla \widetilde{F}_t\|^2$ убывает на 10--16 порядков; у AdamL2 --- зеркально. Медиана и разброс по 5 запускам.}
+\begin{itemize}
+    \footnotesize
+    \item Лемма о нижней оценке: 27 конфигураций --- 0 нарушений; корреляция $d^i$ с частотой признака $0.876$.
+    \item Теорема 2: линейная сходимость к $\widetilde{w}^*_t$ до машинной точности; эмпирическая скорость выше гарантии в 11--207 раз.
+    \item Теоремы 3--4: плато $\propto \eta\sigma^2$, измеренные наклоны $1.00$--$1.03$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Эксперименты: нейронные сети (CIFAR-10/100)}
+\vspace{-0.15cm}
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{fig_b1_heatmap.png}
+\end{figure}
+\vspace{-0.3cm}
+\begin{itemize}
+    \footnotesize
+    \item ResNet-18, CIFAR-10, 90 прогонов: AdamW --- лучший ($93.9 \pm 0.3\%$) и нечувствителен к $\lambda$ на пяти порядках (<<развязка>> $\eta$ и $\lambda$); у AdamL2 оптимум диагонален; AdamWH обрушивается вдоль $\eta\lambda \approx \mathrm{const}$ --- порог устойчивости.
+    \item Эффект критериев воспроизводится на всей сети: $\|\nabla F\|^2 / \|\nabla \widetilde{F}_t\|^2$ до $3.3\cdot10^4$ к концу обучения.
+    \item CIFAR-100: AdamW превосходит AdamL2 на $+1.8$ п.п. (ResNet-18) и $+6.3$ п.п. (ViT-Tiny); преимущество реализуется через лучшую достижимую точку оптимизации.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Эксперименты: GPT-2 124M и GLUE}
+\begin{columns}[t]
+    \begin{column}{0.46\textwidth}
+        \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{fig_c2_val.png}
+        \end{figure}
+        \vspace{-0.2cm}
+        \footnotesize{Предобучение на FineWeb-Edu (1.5 млрд токенов, 2 запуска на метод): AdamW $3.492$, AdamL2 $6.68$; AdamWH расходится при всех испытанных $(\eta, \lambda)$.}
+    \end{column}
+    \begin{column}{0.52\textwidth}
+        \begin{itemize}
+            \footnotesize
+            \item Авто-<<no-decay>>: отношение критериев в конце обучения --- LayerNorm $450$--$1400$, эмбеддинги $\approx 14$, attention/MLP $1.5$--$3$: адаптивная регуляризация сама отключает штраф там, где градиенты малы.
+            \item Рестарты с чекпойнта (3 ветки): поведение критериев совпадает до второго знака --- эффект является свойством метода, а не траектории.
+            \item GLUE (RoBERTa-base, 5 задач): AdamW $\ge$ AdamL2 всюду, на CoLA и STS-B --- статистически значимо ($p \approx 0.01$); AdamWH отстаёт везде.
+        \end{itemize}
+    \end{column}
+\end{columns}
 \end{frame}
 
 \begin{frame}{На защиту выносится}
     \begin{enumerate}
-        \item Исследована теоретическая сходимость методов.
-        \item Новый метод добавления регуляризатора в методы с предобуславливанием.
-        \item Две леммы о существовании, структуре и гладкости измененного регуляризатора.
-        \item Теорема о сходимости методов с предобуславливанием и затуханием весов по норме градиента.
-        \item Теорема о сходимости методов с предобуславливанием и затуханием весов по аргументу.
+        \item Интерпретация затухания весов как оптимизации изменённой задачи $\widetilde{F}_t = f + \widetilde{r}_t$; леммы о существовании, гладкости $\widetilde{r}_t$ и эволюции матрицы $D_t$.
+        \item Лемма о нижней оценке расстояния между решениями исходной и изменённой задач.
+        \item Четыре теоремы о скорости сходимости методов с предобуславливанием и затуханием весов: невыпуклый и сильно выпуклый случаи, каждый --- в детерминированной и стохастической постановках.
+        \item Анализ нового способа регуляризации (масштабированное затухание весов): стационарная точка и порог устойчивости $\eta\lambda/\alpha < 2$.
+        \item Экспериментальная проверка теории на трёх масштабах: задачи с точными решениями, ResNet/ViT на CIFAR-10/100, GPT-2 124M и GLUE.
     \end{enumerate}
 \end{frame}
-
 
 \end{document}

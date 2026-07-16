@@ -1,0 +1,114 @@
+{
+ "diagquad|lam=0.01": {
+  "l2": {
+   "gF2_final": 0.05508078116352409,
+   "gFt2_final": 0.05624326422761025,
+   "dist_to_wstarF": 0.0005408326913208239,
+   "eta": 0.0003
+  },
+  "wh": {
+   "gF2_final": 0.055082874794360866,
+   "gFt2_final": 0.0562069532689066,
+   "dist_to_wstarF": 0.0005408501923564431,
+   "eta": 0.0003
+  },
+  "w": {
+   "gF2_final": 0.17315242082868815,
+   "gFt2_final": 0.1719966660414449,
+   "dist_to_wstarF": 0.027817812608237312,
+   "eta": 0.0003
+  }
+ },
+ "diagquad|lam=0.1": {
+  "l2": {
+   "gF2_final": 0.05679803884156544,
+   "gFt2_final": 0.15631776420766233,
+   "dist_to_wstarF": 0.000561304322141982,
+   "eta": 0.0003
+  },
+  "wh": {
+   "gF2_final": 0.05680638898663901,
+   "gFt2_final": 0.13386806201205992,
+   "dist_to_wstarF": 0.0005609596043913956,
+   "eta": 0.0003
+  },
+  "w": {
+   "gF2_final": 0.28742860671565507,
+   "gFt2_final": 0.17200593716285087,
+   "dist_to_wstarF": 0.2571149021375157,
+   "eta": 0.0003
+  }
+ },
+ "mushrooms|lam=0.01": {
+  "l2": {
+   "gF2_final": 4.809326980475375e-33,
+   "gFt2_final": 0.0012031807627842235,
+   "dist_to_wstarF": 5.5511334513003174e-15,
+   "eta": 0.03
+  },
+  "wh": {
+   "gF2_final": 5.759626770161163e-33,
+   "gFt2_final": 0.0011996582946934386,
+   "dist_to_wstarF": 6.576063478605379e-15,
+   "eta": 0.03
+  },
+  "w": {
+   "gF2_final": 0.016254083380657324,
+   "gFt2_final": 1.1903681254750243e-17,
+   "dist_to_wstarF": 10.010592321109288,
+   "eta": 0.03
+  }
+ },
+ "mushrooms|lam=0.1": {
+  "l2": {
+   "gF2_final": 5.038539068344833e-33,
+   "gFt2_final": 0.020873039946463355,
+   "dist_to_wstarF": 7.02969967664901e-16,
+   "eta": 0.01
+  },
+  "wh": {
+   "gF2_final": 1.1371124104996656e-31,
+   "gFt2_final": 0.01985046771921535,
+   "dist_to_wstarF": 3.153905954420285e-15,
+   "eta": 0.01
+  },
+  "w": {
+   "gF2_final": 0.5291721298050935,
+   "gFt2_final": 5.25096384325828e-32,
+   "dist_to_wstarF": 6.283708567631295,
+   "eta": 0.03
+  }
+ },
+ "wh_instability_threshold": [
+  {
+   "alpha": 1e-08,
+   "eta_lam_over_alpha": 300000.0,
+   "predicted_unstable": true,
+   "diverged": true
+  },
+  {
+   "alpha": 0.0001,
+   "eta_lam_over_alpha": 30.0,
+   "predicted_unstable": true,
+   "diverged": true
+  },
+  {
+   "alpha": 0.003,
+   "eta_lam_over_alpha": 1.0,
+   "predicted_unstable": false,
+   "diverged": false
+  },
+  {
+   "alpha": 0.01,
+   "eta_lam_over_alpha": 0.3,
+   "predicted_unstable": false,
+   "diverged": false
+  },
+  {
+   "alpha": 0.1,
+   "eta_lam_over_alpha": 0.03,
+   "predicted_unstable": false,
+   "diverged": false
+  }
+ ]
+}

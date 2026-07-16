@@ -1,310 +1,348 @@
 \appendix
 \section{Приложение}
-\subsection{Доказательство лемм}
+\subsection{Доказательства лемм}
 \label{appendix:lemmas}
 
-\begin{proof} (Лемма \ref{lemma:Dt})
+\begin{proof}[Доказательство леммы \ref{lemma:Dt}]
+Напомним, что рекурсии \eqref{eq:squares} и \eqref{eq:linear} порождают <<сырую>> последовательность $D_t$, а в шаге метода используется срезанная матрица $\hat{D}_t$ с $\hat{D}_t^{ii} = \max\{\alpha, |D_t^{ii}|\}$.
 \begin{enumerate}
-    \item Благодаря выражению \eqref{eq:alpha} $\hat{D}_t$ ограничена снизу. Из уравнений обновления матрицы предобуславливания \eqref{eq:linear} и \eqref{eq:alpha} можно сделать вывод, что условие \ref{ass:precondstruct} выполняется из итерационного обновления матрицы, а также абсолютное значение диагональных элементов матрицы $D_t$ ограниченно сверху после каждого обновления, по причине того, что матрица $H_t$ ограниченна сверху.
+    \item Диагональность сохраняется как обоими правилами обновления, так и срезкой, поэтому предположение \ref{ass:precondstruct} выполняется для $\hat{D}_t$ при всех $t$. Далее, по индукции для несрезанной последовательности выполняется $|D_t^{ii}| \le \Gamma$: для \eqref{eq:squares}
+    $$(D_{t+1}^{ii})^2 = \beta (D_t^{ii})^2 + (1-\beta)(H_t^{ii})^2 \le \beta \Gamma^2 + (1 - \beta)\Gamma^2 = \Gamma^2,$$
+    а для \eqref{eq:linear}
+    $$|D_{t+1}^{ii}| \le \beta |D_t^{ii}| + (1-\beta)|H_t^{ii}| \le \Gamma,$$
+    где мы использовали предположение $|H_t^{ii}| \le \Gamma$ и базу индукции $|D_0^{ii}| \le \Gamma$. После срезки получаем $\alpha \le \hat{D}_t^{ii} \le \Gamma$, то есть $\alpha I \preccurlyeq \hat{D}_t \preccurlyeq \Gamma I$ --- предположение \ref{ass:preconditioned}.
 
-    \item Можем ограничить норму разности сверху, используя \eqref{eq:squares} и тот факт, что все матрицы диагональные
+    \item Зафиксируем координату $i$ и обозначим $a = |D_t^{ii}|$, $b = |D_{t+1}^{ii}|$, $M_a = \max\{\alpha, a\}$, $M_b = \max\{\alpha, b\}$. Так как $a, b \ge 0$, имеем $M_a^2 = \max\{\alpha^2, a^2\}$ и $M_b^2 = \max\{\alpha^2, b^2\}$. Функция $x \mapsto \max\{\alpha^2, x\}$ 1-липшицева, поэтому
+    $$|M_b^2 - M_a^2| = |\max\{\alpha^2, b^2\} - \max\{\alpha^2, a^2\}| \le |b^2 - a^2|.$$
+    Используя $M_a, M_b \ge \alpha$, равенство $\hat{D}_{t+1}^{ii} - \hat{D}_t^{ii} = M_b - M_a$ и правило обновления \eqref{eq:squares}, получаем
     \begin{equation*}
-    \begin{aligned}
-    || \hat{D}_{t+1} - \hat{D}_t||_\infty \le || D_{t+1} - D_t||_\infty &=  || ((D_{t+1})^2 - (D_t)^2)(D_{t+1} + D_t)^{-1} ||_\infty \\
-    &\le (1 - \beta)|| ((H_t)^2 - (D_t)^2)(D_{t+1} + D_t)^{-1} ||_\infty \\
-    &\le (1 - \beta)\frac{\Gamma^2}{2\alpha}.
-    \end{aligned}
+    \begin{split}
+    |\hat{D}_{t+1}^{ii} - \hat{D}_t^{ii}| &= \frac{|M_b^2 - M_a^2|}{M_b + M_a} \le \frac{|b^2 - a^2|}{2\alpha} \\
+    &= \frac{(1-\beta)\,|(H_t^{ii})^2 - (D_t^{ii})^2|}{2\alpha} \\
+    &\le \frac{(1 - \beta)\Gamma^2}{2\alpha},
+    \end{split}
     \end{equation*}
+    где в последнем переходе использовано, что оба квадрата лежат в отрезке $[0, \Gamma^2]$ (пункт 1). Беря максимум по $i$, получаем утверждение.
 
-    Ограничили каждый фактор по отдельности: $||(D_t)^2 - (H_t)^2||_\infty$ ограничен $\Gamma^2$, так как каждый из диагональных элементов $(D_t)^2$ и $(H_t)^2$ больше 0 и меньше $\Gamma^2$.
-    Второй коэффициент ограничен, поскольку и $D_{t+1}$, и $D_t$ больше или равны $\alpha$, как доказано в первом утверждении этой леммы, следовательно, $$(D_{t+1} + D_t)^{-1} \preccurlyeq \frac{1}{2\alpha}.$$
-
-    \item Можем ограничить норму разности сверху, используя \eqref{eq:linear}, аналогично доказательству второго утверждения этой леммы
+    \item Аналогично, для линейного правила \eqref{eq:linear} используем 1-липшицевость отображения $x \mapsto \max\{\alpha, |x|\}$:
     \begin{equation*}
-    || \hat{D}_{t+1} - \hat{D}_t||_\infty \le || D_{t+1} - D_t||_\infty \le (1 - \beta)|| H_t - D_t ||_\infty \le 2\Gamma (1 - \beta).
+    \begin{split}
+    |\hat{D}_{t+1}^{ii} - \hat{D}_t^{ii}| \le |D_{t+1}^{ii} - D_t^{ii}| &= (1 - \beta)\,|H_t^{ii} - D_t^{ii}| \\
+    &\le (1-\beta)\left(|H_t^{ii}| + |D_t^{ii}|\right) \le 2\Gamma (1 - \beta),
+    \end{split}
     \end{equation*}
-    Используем первое утверждение этой леммы об ограниченности диагональных элементов.
+    где снова использованы границы из пункта 1.
 \end{enumerate}
 \end{proof}
 
-\begin{proof} (Лемма \ref{lemma:existence})
-
-Используя предположения \ref{ass:regstruct}, \ref{ass:precondstruct}, мы можем записать градиент $\widetilde{r}$
+\begin{proof}[Доказательство леммы \ref{lemma:existence}]
+Используя предположения \ref{ass:regstruct} и \ref{ass:precondstruct} и то, что элементы $d_t^i$ не зависят от $w$, запишем градиент функции $\widetilde{r}_t(w) = \sum_{i=1}^d d_t^i r_i(w^i)$:
 \begin{equation*}
-\nabla \widetilde{r} = \nabla \left( \sum_{i=1}^d D_t^i r_i(w_i) \right) = D_t \begin{pmatrix}
-  r_1'(w_1) \\
+\nabla \widetilde{r}_t(w) = \nabla \left( \sum_{i=1}^d d_t^i \, r_i(w^i) \right) = D_t \begin{pmatrix}
+  r_1'(w^1) \\
   \vdots  \\
-  r_d'(w_d)
-\end{pmatrix} = D_t \nabla r.
+  r_d'(w^d)
+\end{pmatrix} = D_t \nabla r(w).
 \end{equation*}
-Доказали необходимое на утверждение.
+Таким образом, функция с требуемым градиентом существует. Поскольку градиент задан на всём (связном) пространстве $\mathbb{R}^d$, функция $\widetilde{r}_t$ определена однозначно с точностью до аддитивной константы.
 \end{proof}
 
-\begin{proof} (Лемма \ref{lemma:tildesmoothness})
-Мы можем написать определение гладкости, используя лемму \ref{lemma:existence}, а затем применить \ref{ass:smoothness} и \ref{ass:preconditioned}.
+\begin{proof}[Доказательство леммы \ref{lemma:tildesmoothness}]
+По лемме \ref{lemma:existence} и предположениям \ref{ass:smoothness}, \ref{ass:preconditioned} для любых $x, y \in \mathbb{R}^d$
 \begin{equation*}
 \begin{split}
-    || \nabla \widetilde{r}(x) - \nabla \widetilde{r}(y) || &=
-    \Bigg{\|} \nabla \left( \sum_{i=1}^d D_t^i r_i(x_i) \right) - \nabla \left( \sum_{i=1}^d D_t^i r_i(y_i) \right) \Bigg{\|} \\
-    & = ||D_t \left( \nabla r(x) - \nabla r(y) \right)|| \le  ||D_t|| L_r \le \Gamma L_r
+    \| \nabla \widetilde{r}_t(x) - \nabla \widetilde{r}_t(y) \| =
+    \|D_t \left( \nabla r(x) - \nabla r(y) \right)\| &\le  \|D_t\|_2 \, \|\nabla r(x) - \nabla r(y)\| \\
+    &\le \Gamma L_r \|x - y\|,
 \end{split}
 \end{equation*}
-Доказали необходимое нам утверждение.
+где $\|D_t\|_2 \le \Gamma$ в силу предположения \ref{ass:preconditioned}. Следовательно, $\widetilde{r}_t$ является $\Gamma L_r$-гладкой, и для неё выполняется неравенство \eqref{eq:descent_lemma} с $L = \Gamma L_r$. Наконец,
+\begin{equation*}
+    \|\nabla \widetilde{F}_t(x) - \nabla \widetilde{F}_t(y)\| \le \|\nabla f(x) - \nabla f(y)\| + \|\nabla \widetilde{r}_t(x) - \nabla \widetilde{r}_t(y)\| \le (L_f + \Gamma L_r) \|x-y\|,
+\end{equation*}
+то есть $\widetilde{F}_t$ является $\widetilde{L}$-гладкой с $\widetilde{L} = L_f + \Gamma L_r$.
 \end{proof}
 
-\begin{proof} (Proof of lemma \ref{lemma:lowerbondF})
-    Напишем определения решений $w^*$, $\widetilde{w}^*$:
+\begin{proof}[Доказательство леммы \ref{lemma:lowerbondF}]
+    Запишем условия стационарности для решений $\widetilde{w}^*_t$ и $w^*$:
         \begin{equation*}
         \begin{cases}
-            \nabla f (\widetilde{w}^*) + D_t \nabla r(\widetilde{w}^*) = 0\\
-            \nabla f (w^*) + \nabla r(w^*) = 0\\
-        \end{cases},
+            \nabla f (\widetilde{w}^*_t) + D_t \nabla r(\widetilde{w}^*_t) = 0,\\
+            \nabla f (w^*) + \nabla r(w^*) = 0.\\
+        \end{cases}
         \end{equation*}
-        Тогда мы можем получить нижнюю границу из определения $L_F$-контрастности функции $F$.
+        По предположению \ref{ass:smoothness} градиент функции $F = f + r$ липшицев с константой $L_F = L_f + L_r$, откуда
         \begin{equation*}
         \begin{split}
-        \|\widetilde{w}^* - w^* \| L_F &\geq \| \nabla f (\widetilde{w}^*) + \nabla r(\widetilde{w}^*) - \nabla f (w^*) - \nabla r (w^*) \| \\
-        &= \| - D_t \nabla r (\widetilde{w}^*) + \nabla r(\widetilde{w}^*) \|  = \| \nabla r (\widetilde{w}^*) (I - D_t)\|.
+        L_F \|\widetilde{w}^*_t - w^* \| &\geq \| \nabla F(\widetilde{w}^*_t) - \nabla F(w^*)\| \\
+        &= \| \nabla f (\widetilde{w}^*_t) + \nabla r(\widetilde{w}^*_t) - \underbrace{\left(\nabla f (w^*) + \nabla r (w^*)\right)}_{=0} \| \\
+        &= \| \nabla r(\widetilde{w}^*_t) - D_t \nabla r (\widetilde{w}^*_t) \|  = \| (I - D_t)\, \nabla r (\widetilde{w}^*_t) \|,
         \end{split}
         \end{equation*}
-    Доказали утверждение.
+    где во втором переходе мы подставили первое условие стационарности. Лемма доказана.
 \end{proof}
 
 \subsection{Доказательства теорем}
 \label{appendix:theorems}
 
-\begin{proof} (Теорема \ref{theor:1})
+\begin{proof}[Доказательство теоремы \ref{theor:1}]
 \label{proof:theorem1}
 
-Используем предположение \eqref{ass:smoothness} для шагов $t$ и $t+1$:
-\begin{equation} \label{eq1}
-    f(w_{t+1}) \leq f(w_t) + \langle \nabla f(w_t), w_{t+1} - w_t \rangle + \frac{L_f}{2}||w_{t+1} - w_t ||^2,
+В детерминированном случае $g_t = \nabla f(w_t)$ и шаг метода имеет вид
+\begin{equation}
+\label{eq:step_det}
+w_{t+1} - w_t = -\eta D_t^{-1} \nabla f(w_t) - \eta \nabla r(w_t) = -\eta D_t^{-1} \nabla \widetilde{F}_t(w_t).
 \end{equation}
-По определению нашего алгоритма мы имеем:
+Применим неравенство \eqref{eq:descent_lemma} к $L_f$-гладкой функции $f$ в точках $w_t$ и $w_{t+1}$:
+\begin{equation} \label{eq:t1_descent}
+    f(w_{t+1}) \leq f(w_t) + \langle \nabla f(w_t), w_{t+1} - w_t \rangle + \frac{L_f}{2}\|w_{t+1} - w_t \|^2.
+\end{equation}
+Из \eqref{eq:step_det} выразим градиент функции $f$:
 \begin{equation*}
-w_{t+1} - w_t = -\eta D_t^{-1} \nabla f(w_t) - \eta \nabla r(w_t).
+\nabla f(w_t) = \frac{1}{\eta} D_t(w_t - w_{t+1}) - D_t \nabla r(w_t).
 \end{equation*}
-Из предыдущего выражения выбираем градиент функции
-\begin{equation*}
-\nabla f(w_t) = \frac{1}{\eta} D_t(w_t - w_{t+1}) - D_t \nabla r(w_t),
-\end{equation*}
-заменим $\nabla f(w_t)$ в \ref{eq1} и по предположению \ref{ass:preconditioned},, $I \preccurlyeq \frac{D_t}{\alpha}$
+Подставим это выражение в \eqref{eq:t1_descent}; по предположению \ref{ass:preconditioned} $\|w_{t+1} - w_t\|^2 \le \frac{1}{\alpha}\|w_{t+1} - w_t\|^2_{D_t}$, поэтому
 \begin{equation*}
 \begin{split}
-    f(w_{t+1}) &\leq f(w_t) + \langle \frac{1}{\eta}D_t(w_t - w_{t+1}) - D_t\nabla r(w_t), w_{t+1} - w_t \rangle + \frac{L_f}{2 \alpha} ||w_{t+1} - w_t||_{D_t}^2 \\
-    &= f(w_t) + \left(\frac{L_f}{2 \alpha} - \frac{1}{\eta} \right) ||w_{t+1} - w_t||_{D_t}^2 - \langle D_t \nabla r(w_t), w_{t+1} - w_t \rangle,
+    f(w_{t+1}) &\leq f(w_t) + \left\langle \frac{1}{\eta}D_t(w_t - w_{t+1}) - D_t\nabla r(w_t), w_{t+1} - w_t \right\rangle \\
+    &\quad + \frac{L_f}{2 \alpha} \|w_{t+1} - w_t\|_{D_t}^2 \\
+    &= f(w_t) + \left(\frac{L_f}{2 \alpha} - \frac{1}{\eta} \right) \|w_{t+1} - w_t\|_{D_t}^2 - \langle D_t \nabla r(w_t), w_{t+1} - w_t \rangle.
 \end{split}
 \end{equation*}
-используя обозначение $\widetilde{r}_t : \nabla \widetilde{r}_t = D_t \nabla r(w_t)$,
-мы можем переписать шаг, используя переменную и предположение \eqref{ass:smoothness}
+По лемме \ref{lemma:existence} $D_t \nabla r(w_t) = \nabla \widetilde{r}_t(w_t)$, а по лемме \ref{lemma:tildesmoothness} функция $\widetilde{r}_t$ является $L_{\tilde r}$-гладкой с $L_{\tilde r} = \Gamma L_r$, то есть
 \begin{equation*}
-    \widetilde{r}(w_{t+1}) \leq \widetilde{r}(w_t) + \langle \nabla \widetilde{r}(w_t), w_{t+1} - w_t \rangle + \frac{L_{\tilde{r}}}{2} ||w_{t+1} - w_t||_2^2.
+\begin{split}
+    \widetilde{r}_t(w_{t+1}) &\leq \widetilde{r}_t(w_t) + \langle \nabla \widetilde{r}_t(w_t), w_{t+1} - w_t \rangle + \frac{L_{\tilde{r}}}{2} \|w_{t+1} - w_t\|^2 \\
+    &\le \widetilde{r}_t(w_t) + \langle \nabla \widetilde{r}_t(w_t), w_{t+1} - w_t \rangle + \frac{L_{\tilde{r}}}{2\alpha} \|w_{t+1} - w_t\|_{D_t}^2,
+\end{split}
 \end{equation*}
-Заменим старую функцию регуляризации на новую
+где мы снова использовали $\|\cdot\|^2 \le \frac{1}{\alpha}\|\cdot\|^2_{D_t}$. Отсюда
 \begin{equation*}
-    f(w_{t+1}) \leq f(w_t) + \left( \frac{L_f}{2\alpha} - \frac{1}{\eta} \right) ||w_{t+1} - w_t||_{D_t}^2 + \tilde{r}(w_t) - \tilde{r}(w_{t+1}) + \frac{\Gamma L_{\tilde{r}}}{2}||w_{t+1}-w_t||_{D_t}^2.
+    -\langle \nabla \widetilde{r}_t(w_t), w_{t+1} - w_t \rangle \le \widetilde{r}_t(w_t) - \widetilde{r}_t(w_{t+1}) + \frac{L_{\tilde{r}}}{2\alpha} \|w_{t+1} - w_t\|_{D_t}^2,
 \end{equation*}
-Теперь давайте определим новую функцию потерь
-$\widetilde{F}_t(w) := f(w) + \tilde{r}_t(w)$, ($\tilde{L}=L_f + \Gamma L_{r}$), мы получаем:
+и, подставляя в предыдущую оценку,
 \begin{equation*}
-    \widetilde{F}_t(w_{t+1}) \leq \widetilde{F}_t(w_t) + \left( \frac{\widetilde{L}}{2\alpha} - \frac{1}{\eta}  \right) ||w_{t+1} - w_t||_{D_t}^2,
+\begin{split}
+    f(w_{t+1}) \leq f(w_t) &+ \left( \frac{L_f}{2\alpha} - \frac{1}{\eta} \right) \|w_{t+1} - w_t\|_{D_t}^2 \\
+    &+ \widetilde{r}_t(w_t) - \widetilde{r}_t(w_{t+1}) + \frac{L_{\tilde{r}}}{2\alpha}\|w_{t+1}-w_t\|_{D_t}^2.
+\end{split}
 \end{equation*}
-мы выбираем шаг таким образом, чтобы $ \frac{\tilde{L}}{2\alpha} - \frac{1}{\eta} < 0 \Leftrightarrow \eta < \frac{2 \alpha}{\tilde{L}}$
+Вспоминая определение $\widetilde{F}_t(w) := f(w) + \widetilde{r}_t(w)$ и обозначая $\widetilde{L} = L_f + L_{\tilde r} = L_f + \Gamma L_{r}$, получаем:
+\begin{equation*}
+    \widetilde{F}_t(w_{t+1}) \leq \widetilde{F}_t(w_t) + \left( \frac{\widetilde{L}}{2\alpha} - \frac{1}{\eta}  \right) \|w_{t+1} - w_t\|_{D_t}^2.
+\end{equation*}
+Мы выбираем шаг так, что $ \frac{\widetilde{L}}{2\alpha} - \frac{1}{\eta} < 0 \Leftrightarrow \eta < \frac{2 \alpha}{\widetilde{L}}$, поэтому
 \begin{equation}
 \label{eq:theor1}
-    \left(\frac{1}{\eta} - \frac{\tilde{L}}{2\alpha}   \right) ||w_{t+1} - w_t||_{D_t}^2 \leq \tilde{F}_t(w_t) - \tilde{F}_t(w_{t+1}).
+    \left(\frac{1}{\eta} - \frac{\widetilde{L}}{2\alpha}   \right) \|w_{t+1} - w_t\|_{D_t}^2 \leq \widetilde{F}_t(w_t) - \widetilde{F}_t(w_{t+1}).
 \end{equation}
-Тогда заметим, что согласно алгоритму
+Заметим, что согласно \eqref{eq:step_det}
 \begin{equation*}
 \begin{aligned}
-    ||w_{t+1} - w_t||^2_{D_t} &= ||-\eta D_t^{-1} \nabla f(w_t) - \eta \nabla r(w_t)||_{D_t}^2 \\
-    &= \eta^2 || D_t^{-1} 
-    ( \nabla f(w_t) + \nabla \widetilde{r}_t(w_t) ) ||_{D_t}^2 \\
-    &= \eta^2  ( \nabla f(w_t) + \nabla \widetilde{r}_t(w_t))^T D_t^{-1} D_t  D_t^{-1} 
-    ( \nabla f(w_t) + \nabla \widetilde{r}_t(w_t) ) \\
-    &\ge \frac{\eta^2}{\Gamma} || \nabla f(w_t) + \nabla \widetilde{r}_t(w_t) ||^2 = \frac{\eta^2}{\Gamma} ||\nabla\widetilde{F}_t(w_t)||^2,
+    \|w_{t+1} - w_t\|^2_{D_t} &= \eta^2 \| D_t^{-1}
+    \nabla \widetilde{F}_t(w_t) \|_{D_t}^2
+    = \eta^2 \nabla \widetilde{F}_t(w_t)^T D_t^{-1} D_t  D_t^{-1}
+    \nabla \widetilde{F}_t(w_t) \\
+    &= \eta^2 \| \nabla \widetilde{F}_t(w_t) \|^2_{D_t^{-1}} \ge \frac{\eta^2}{\Gamma} \|\nabla\widetilde{F}_t(w_t)\|^2,
 \end{aligned}
 \end{equation*}
-и заменим $||w_{t+1} - w_t||^2_{D_t}$ в \eqref{eq:theor1} предыдущим уравнением и получим
+и, подставляя это в \eqref{eq:theor1}, получаем
 \begin{equation}
 \label{eq:theor1-1}
-    \left(\frac{1}{\eta} - \frac{\tilde{L}}{2\alpha}   \right) \frac{\eta^2}{\Gamma} || \nabla\widetilde{F}_t(w_t) ||^2 \leq \tilde{F}_t(w_t) - \tilde{F}_t(w_{t+1}).
+    \left(\frac{1}{\eta} - \frac{\widetilde{L}}{2\alpha}   \right) \frac{\eta^2}{\Gamma} \| \nabla\widetilde{F}_t(w_t) \|^2 \leq \widetilde{F}_t(w_t) - \widetilde{F}_t(w_{t+1}).
 \end{equation}
-Чтобы получить уравнение, мы связываем норму разности $\tilde{F}_{t+1}$ и $\tilde{F}_t$ при равных переменных $w$:
+Далее оценим изменение функции $\widetilde{F}_t$ при переходе от $t$ к $t+1$ в фиксированной точке $w$:
 \begin{equation*}
 \begin{aligned}
-    | \widetilde{F}_{t+1}(w) - \widetilde{F}_{t}(w)| &= |\widetilde{r}_{t+1}(w) - \widetilde{r}_t(w) | = \left|\sum\limits_{i=0}^d (d_{t+1}^i - d^i_t)r_i(w^i) \right| \\
-    &\leq \sum\limits_{i=0}^d |d_{t+1}^i - d^i_t| r_i(w^i) \leq ||D_{t+1} - D_t||_\infty |r(w)| \\
-    &\leq \Omega ||D_{t+1} - D_t||_\infty,
+    | \widetilde{F}_{t+1}(w) - \widetilde{F}_{t}(w)| &= |\widetilde{r}_{t+1}(w) - \widetilde{r}_t(w) | = \left|\sum\limits_{i=1}^d (d_{t+1}^i - d^i_t)\,r_i(w^i) \right| \\
+    &\leq \sum\limits_{i=1}^d |d_{t+1}^i - d^i_t| \, r_i(w^i) \leq \|D_{t+1} - D_t\|_\infty \, r(w) \\
+    &\leq \Omega \|D_{t+1} - D_t\|_\infty,
 \end{aligned}
 \end{equation*}
-где мы используем предположение \ref{ass:regstruct} и предположение \ref{ass:regbound}.
-
-Затем нам нужно оценить $| \widetilde{F}_{t+1}(w) - \widetilde{F}_{t}(w)|$, используя лемму \ref{lemma:Dt}.
-Мы связываем последнее уравнение с $\delta$ и уточняем $\delta$ для случаев \eqref{eq:squares} и \eqref{eq:linear}
+где мы использовали неотрицательность $r_i$ (предположение \ref{ass:regstruct}) и предположение \ref{ass:regbound}.
+По лемме \ref{lemma:Dt} $\|D_{t+1} - D_t\|_\infty \le \rho_\beta$, поэтому
 \begin{equation}
 \label{eq:Ft+1-Ft}
-| \widetilde{F}_{t+1}(w) - \widetilde{F}_{t}(w)| \le \Omega ||D_{t+1} - D_t||_\infty \le \delta,
+| \widetilde{F}_{t+1}(w) - \widetilde{F}_{t}(w)| \le \Omega \rho_\beta = \delta,
 \end{equation}
-где $\delta = \begin{cases}
-    \frac{(1 - \beta)\Gamma^2}{2\alpha}\Omega & \text{для } \eqref{eq:squares} \\
-    2(1 - \beta)\Gamma\Omega  &  \text{для } \eqref{eq:linear}
-\end{cases}.$
-
-Теперь мы можем оценить следующую разность, используя \eqref{eq:theor1-1} и \eqref{eq:Ft+1-Ft}.
+где $\delta$ --- та же величина, что и в формулировке теоремы (её значения для \eqref{eq:squares} и \eqref{eq:linear} получаются подстановкой $\rho_\beta$ из леммы \ref{lemma:Dt}).
+Теперь оценим убывание по <<диагонали>>, используя \eqref{eq:theor1-1} и \eqref{eq:Ft+1-Ft}:
 \begin{equation*}
 \begin{aligned}
-\widetilde{F}_t(w_t) - \widetilde{F}_{t+1}(w_{t+1}) &= \widetilde{F}_t(w_t) - \widetilde{F}_{t}(w_{t+1}) + \widetilde{F}_{t}(w_{t+1}) - \widetilde{F}_{t+1}(w_{t+1}) \\ 
-&\ge \left(\frac{1}{\eta} - \frac{\tilde{L}}{2\alpha}   \right) \frac{\eta^2}{\Gamma} || \nabla\widetilde{F}_t(w_t) ||^2 - \delta,
+\widetilde{F}_t(w_t) - \widetilde{F}_{t+1}(w_{t+1}) &= \widetilde{F}_t(w_t) - \widetilde{F}_{t}(w_{t+1}) + \widetilde{F}_{t}(w_{t+1}) - \widetilde{F}_{t+1}(w_{t+1}) \\
+&\ge \left(\frac{1}{\eta} - \frac{\widetilde{L}}{2\alpha}   \right) \frac{\eta^2}{\Gamma} \| \nabla\widetilde{F}_t(w_t) \|^2 - \delta,
 \end{aligned}
 \end{equation*}
-и перепишем
+то есть
 \begin{equation*}
- \left(\frac{1}{\eta} - \frac{\tilde{L}}{2\alpha}   \right) \frac{\eta^2}{\Gamma} || \nabla\widetilde{F}_t(w_t) ||^2 \le \widetilde{F}_t(w_t) - \widetilde{F}_{t+1}(w_{t+1}) + \delta.
+ \left(\frac{1}{\eta} - \frac{\widetilde{L}}{2\alpha}   \right) \frac{\eta^2}{\Gamma} \| \nabla\widetilde{F}_t(w_t) \|^2 \le \widetilde{F}_t(w_t) - \widetilde{F}_{t+1}(w_{t+1}) + \delta.
 \end{equation*}
-Теперь просуммируем все итерации предыдущего выражения
+Просуммируем полученное неравенство по всем итерациям $t = 0, \ldots, T$. Сумма в правой части телескопируется:
 \begin{equation*}
 \begin{split}
-    \frac{\eta^2  (T+1)}{\Gamma}\left(\frac{1}{\eta} - \frac{\tilde{L}}{2\alpha}   \right)\cdot\min_{t \in \overline{0, T}} ||\nabla\widetilde{F}_t(w_t)||^2 & \leq \frac{\eta^2}{\Gamma}\left(\frac{1}{\eta} - \frac{\tilde{L}}{2\alpha}   \right)\cdot\sum\limits_{t = 0}^T ||\nabla\widetilde{F}_t(w_t)||^2 \\
-    & \leq \tilde{F}(w_0) - \tilde{F}^* + \delta \cdot (T+1)
+    \frac{\eta^2  (T+1)}{\Gamma}\left(\frac{1}{\eta} - \frac{\widetilde{L}}{2\alpha}   \right)\cdot\min_{t \in \overline{0, T}} \|\nabla\widetilde{F}_t(w_t)\|^2 & \leq \frac{\eta^2}{\Gamma}\left(\frac{1}{\eta} - \frac{\widetilde{L}}{2\alpha}   \right)\cdot\sum\limits_{t = 0}^T \|\nabla\widetilde{F}_t(w_t)\|^2 \\
+    & \leq \widetilde{F}_0(w_0) - \widetilde{F}_{T+1}(w_{T+1}) + \delta \cdot (T+1).
 \end{split}
 \end{equation*}
-Переместив все в правую часть, мы получим следующую оценку
+Заметим, что $\widetilde{F}_{T+1}(w) = f(w) + \widetilde{r}_{T+1}(w) \ge f(w) \ge f^*$, поскольку $\widetilde{r}_{T+1}(w) = \sum_i d_{T+1}^i r_i(w^i) \ge 0$ в силу $r_i \ge 0$ (предположение \ref{ass:regstruct}) и $d_{T+1}^i \ge \alpha > 0$ (предположение \ref{ass:preconditioned}). Поэтому правая часть не превосходит $\Delta_0 + \delta(T+1)$, где $\Delta_0 = \widetilde{F}_0(w_0) - f^*$, и
 \begin{equation*}
-    \min_{t \in \overline{0, T}} ||\nabla f(w_t) + \nabla \tilde{r}(w_t)||^2 \leq \frac{(\tilde{F}(w_0) - \tilde{F}(w_*))\Gamma}{(\frac{1}{\eta} - \frac{\tilde{L}}{2\alpha}) \eta^2 (T+1)} + \frac{\delta \Gamma}{(\frac{1}{\eta} - \frac{\tilde{L}}{2\alpha}) \eta^2} = \varepsilon,
+    \min_{t \in \overline{0, T}} \|\nabla \widetilde{F}_t(w_t)\|^2 \leq \frac{\Delta_0 \Gamma}{(\frac{1}{\eta} - \frac{\widetilde{L}}{2\alpha})\, \eta^2 (T+1)} + \frac{\delta \Gamma}{(\frac{1}{\eta} - \frac{\widetilde{L}}{2\alpha})\, \eta^2}.
 \end{equation*}
+Приравнивая правую часть к $\varepsilon$ и учитывая условие $\varepsilon > \frac{\delta\Gamma}{\eta - \widetilde{L}\eta^2/(2\alpha)}$ (без него никакое число итераций не гарантирует $\varepsilon$-точность), получаем
 \begin{equation*}
-    T + 1 \geq \frac{\Delta_0 \Gamma}{(\eta - \frac{\tilde{L}\eta^2}{2\alpha}) \left( \varepsilon -\frac{\delta\Gamma}{\eta - \frac{\tilde{L}\eta^2}{2\alpha}}\right)}.
+    T + 1 \geq \frac{\Delta_0 \Gamma}{(\eta - \frac{\widetilde{L}\eta^2}{2\alpha}) \left( \varepsilon -\frac{\delta\Gamma}{\eta - \frac{\widetilde{L}\eta^2}{2\alpha}}\right)},
 \end{equation*}
-Мы получаем оценку количества шагов, необходимых для достижения заданной точности
+что и даёт оценку количества шагов, необходимых для достижения заданной точности:
 \begin{equation*}
-      T = \mathcal{O}\left( \frac{\Delta_0 \Gamma}{(\eta - \frac{\tilde{L}\eta^2}{2\alpha}) \left( \varepsilon -\frac{\delta\Gamma}{\eta - \frac{\tilde{L}\eta^2}{2\alpha}}\right)} \right).
+      T = \mathcal{O}\left( \frac{\Delta_0 \Gamma}{(\eta - \frac{\widetilde{L}\eta^2}{2\alpha}) \left( \varepsilon -\frac{\delta\Gamma}{\eta - \frac{\widetilde{L}\eta^2}{2\alpha}}\right)} \right).
 \end{equation*}
 \end{proof}
 
-\begin{proof} (Теорема \ref{theor:2})
-В дальнейшем доказательстве нам понадобятся вспомогательный термин - $\sigma_{t+1}^2$, он понадобится нам для записи рекурсии:
+\begin{proof}[Доказательство теоремы \ref{theor:2}]
+Для регуляризации Тихонова $r(w) = \frac{\lambda}{2}\|w\|^2$ по лемме \ref{lemma:existence}
+$$\widetilde{r}_t(w) = \frac{\lambda}{2} \sum_{i=1}^d d_t^i (w^i)^2 = \frac{\lambda}{2}\|w\|_{D_t}^2, \qquad \nabla \widetilde{F}_t(w) = \nabla f(w) + \lambda D_t w.$$
+
+\textbf{Шаг 0: свойства $\widetilde{F}_t$ и её минимизатора.}
+Функция $\widetilde{r}_t$ имеет гессиан $\lambda D_t \succcurlyeq \lambda \alpha I$, поэтому вместе с предположением \ref{ass:muconvex} функция $\widetilde{F}_t$ является $\widetilde{\mu}$-сильно выпуклой с $\widetilde{\mu} = \mu_f + \lambda\alpha$; её градиент липшицев с константой $\widetilde{L} = L_f + \lambda\Gamma$ (лемма \ref{lemma:tildesmoothness} с $L_r = \lambda$). Следовательно, минимизатор $\widetilde{w}^*_t = \argmin_w \widetilde{F}_t(w)$ существует и единственен, причём $\nabla \widetilde{F}_t(\widetilde{w}^*_t) = 0$.
+
+Оценим $\|\widetilde{w}^*_t\|$. По сильной выпуклости и $\nabla\widetilde{F}_t(\widetilde{w}^*_t) = 0$:
 \begin{equation*}
-    \sigma_{t+1}^2 = ||D_{t+1}||_2^2 = ||\beta D_{t} + (1-\beta) H_t ||_2^2 =\beta^2 ||D_{t} +\frac{1-\beta}{\beta}H_t||_2^2.
+0 = \langle \nabla \widetilde{F}_t(\widetilde{w}^*_t) - \nabla \widetilde{F}_t(0), \widetilde{w}^*_t \rangle + \langle \nabla \widetilde{F}_t(0), \widetilde{w}^*_t \rangle \ge \widetilde{\mu}\|\widetilde{w}^*_t\|^2 - \|\nabla \widetilde{F}_t(0)\|\cdot\|\widetilde{w}^*_t\|,
 \end{equation*}
-Тогда давайте перепишем:
+а так как $\nabla \widetilde{F}_t(0) = \nabla f(0)$, получаем
+\begin{equation}
+\label{eq:omega0}
+\|\widetilde{w}^*_t\| \le \frac{\|\nabla f(0)\|}{\widetilde{\mu}} = \Omega_0 \qquad \forall t.
+\end{equation}
+
+\textbf{Шаг 1: сжатие за один шаг при фиксированных $D_t$ и $\widetilde{w}^*_t$.}
+Шаг метода: $w_{t+1} = w_t - \eta D_t^{-1} \nabla \widetilde{F}_t(w_t)$. Тогда
+\begin{equation*}
+    \|w_{t+1}-\widetilde{w}^*_t\|_{D_t}^2 = \|w_t - \widetilde{w}^*_t\|_{D_t}^2 - 2 \eta \langle \nabla \widetilde{F}_t(w_t), w_t - \widetilde{w}^*_t \rangle + \eta^2 \|\nabla \widetilde{F}_t(w_t)\|_{D_t^{-1}}^2.
+\end{equation*}
+Оценим второй член через сильную выпуклость ($\nabla \widetilde{F}_t(\widetilde{w}^*_t) = 0$) и предположение \ref{ass:preconditioned}:
+\begin{equation*}
+    \langle \nabla \widetilde{F}_t(w_t), w_t - \widetilde{w}^*_t \rangle \ge \widetilde{\mu} \|w_t - \widetilde{w}^*_t\|^2 \ge \frac{\widetilde{\mu}}{\Gamma} \|w_t - \widetilde{w}^*_t\|_{D_t}^2,
+\end{equation*}
+а третий --- через липшицевость градиента:
+\begin{equation*}
+    \|\nabla \widetilde{F}_t(w_t)\|_{D_t^{-1}}^2 \le \frac{1}{\alpha}\|\nabla \widetilde{F}_t(w_t) - \nabla \widetilde{F}_t(\widetilde{w}^*_t)\|^2 \le \frac{\widetilde{L}^2}{\alpha}\|w_t - \widetilde{w}^*_t\|^2 \le \frac{\widetilde{L}^2}{\alpha^2}\|w_t - \widetilde{w}^*_t\|_{D_t}^2.
+\end{equation*}
+Итого
+\begin{equation*}
+    \|w_{t+1}-\widetilde{w}^*_t\|_{D_t}^2 \le \left(1 - \frac{2\eta\widetilde{\mu}}{\Gamma} + \frac{\eta^2 \widetilde{L}^2}{\alpha^2}\right) \|w_t - \widetilde{w}^*_t\|_{D_t}^2 \le \left(1 - \frac{\eta\widetilde{\mu}}{\Gamma}\right) \|w_t - \widetilde{w}^*_t\|_{D_t}^2,
+\end{equation*}
+где в последнем переходе использовано условие $\eta \le \frac{\widetilde{\mu}\alpha^2}{\Gamma \widetilde{L}^2}$, дающее $\frac{\eta^2\widetilde{L}^2}{\alpha^2} \le \frac{\eta\widetilde{\mu}}{\Gamma}$.
+
+\textbf{Шаг 2: дрейф минимизатора.}
+Вычтем условия стационарности для шагов $t$ и $t+1$:
+\begin{equation*}
+    \left[\nabla f(\widetilde{w}^*_{t+1}) - \nabla f(\widetilde{w}^*_t)\right] + \lambda D_{t+1}\left(\widetilde{w}^*_{t+1} - \widetilde{w}^*_t\right) = -\lambda (D_{t+1} - D_t)\, \widetilde{w}^*_t.
+\end{equation*}
+Скалярно умножим обе части на $\widetilde{w}^*_{t+1} - \widetilde{w}^*_t$. Левая часть не меньше $(\mu_f + \lambda\alpha)\|\widetilde{w}^*_{t+1} - \widetilde{w}^*_t\|^2 = \widetilde{\mu}\|\widetilde{w}^*_{t+1} - \widetilde{w}^*_t\|^2$ (сильная выпуклость $f$ и $D_{t+1} \succcurlyeq \alpha I$), правая по неравенству Коши--Буняковского и лемме \ref{lemma:Dt} не превосходит $\lambda \rho_\beta \Omega_0 \|\widetilde{w}^*_{t+1} - \widetilde{w}^*_t\|$, где мы использовали \eqref{eq:omega0}. Следовательно,
+\begin{equation}
+\label{eq:drift}
+    \|\widetilde{w}^*_{t+1} - \widetilde{w}^*_t\| \le \frac{\lambda \rho_\beta \Omega_0}{\widetilde{\mu}}.
+\end{equation}
+
+\textbf{Шаг 3: рекурсия для $R_t^2$.}
+Обозначим $s := \frac{\eta\widetilde{\mu}}{4\Gamma}$ и заметим, что $s \le \frac{1}{4}$ (действительно, $\frac{\eta\widetilde{\mu}}{\Gamma} \le \frac{\widetilde{\mu}^2\alpha^2}{\Gamma^2\widetilde{L}^2} \le 1$, так как $\widetilde{\mu} \le \widetilde{L}$ и $\alpha \le \Gamma$). Переход к норме следующего шага: по лемме \ref{lemma:Dt} и предположению \ref{ass:preconditioned}
+\begin{equation*}
+    \|x\|_{D_{t+1}}^2 \le \|x\|_{D_t}^2 + \|D_{t+1} - D_t\|_\infty \|x\|^2 \le \left(1 + \frac{\rho_\beta}{\alpha}\right)\|x\|_{D_t}^2,
+\end{equation*}
+причём по условию теоремы $\frac{\rho_\beta}{\alpha} \le \frac{\eta\widetilde{\mu}}{4\Gamma} = s$. Комбинируя неравенство Юнга $\|a + b\|_{D_t}^2 \le (1+\theta)\|a\|_{D_t}^2 + (1 + \frac{1}{\theta})\|b\|_{D_t}^2$ с $\theta = s$, оценку шага 1, оценку дрейфа \eqref{eq:drift} и $\|\cdot\|^2_{D_t} \le \Gamma\|\cdot\|^2$, получаем
 \begin{equation*}
 \begin{split}
-    \sigma_{t+1}^2 &\leq \beta^2 \dot (1+\frac{1}{a}) \sigma_{t}^2 + \left(\frac{1-\beta}{\beta}\right)^2(1+a)||\nabla f(w_t)||_2^2 \\ 
-    & =  \beta^2 (1+\frac{1}{a})\sigma_{t}^2 + \left(\frac{1-\beta}{\beta} \right)^2(1+a) ||\nabla f(w_t) - \nabla f(w_*)||_2^2  \\
-    & \leq \beta^2(1+\frac{1}{a})\sigma_{t}^2 + 2\left(\frac{1-\beta}{\beta} \right)^2(1+a)L_f (f(w_t) - f(w_*)).
-    \end{split}
-\end{equation*}
-Выберем $a = \frac{\beta}{1-\beta}$, чтобы получить $\beta^2(1+\frac{1}{a}) = \beta$, учтем это в уравнении $\sigma^2$:
-\begin{equation*}
-    \sigma_{t+1}^2 \leq \beta \sigma_{t}^2 + 2\frac{1-\beta}{\beta^2}L_f (f(w_t) - f(w_*)).
-\end{equation*}
-Запишем норму между текущими весами и решением исходной задачи:
-\begin{equation*}
-    ||w_{t+1}-w_*||_{D_t}^2 = ||w_t - w_*||_{D_t}^2 - 2 \eta \langle \nabla f(w_t) + D_t \nabla r(w_t), w_t - w_* \rangle + \eta^2 ||\nabla f(w_t) +D_t \nabla r(w_t)||_{D_t^{-1}}^2.
-    \end{equation*}
-С предположением \ref{ass:muconvex} на $f$:
-\begin{equation*}
-\begin{split}
-    ||w_{t+1}-w_*||_{D_t}^2 &\leq ||w_t-w_*||_{D_t}^2 + 2\eta \left(f(w_*) - f(w_t) - \frac{\mu_f}{2} ||w_t - w_*||_2^2 \ \right)\\ 
-    & - 2\eta \langle \nabla r(w_t), w_t - w_* \rangle_{D_t} + \eta^2 ||\nabla f(w_t) + D_t \nabla r(w_t)||_{D_t^{-1}}^2.
+    R_{t+1}^2 = \|w_{t+1} - \widetilde{w}^*_{t+1}\|^2_{D_{t+1}} &\le (1+s)(1+s)\|w_{t+1} - \widetilde{w}^*_t\|_{D_t}^2 \\
+    &\quad + (1+s)\left(1 + \frac{1}{s}\right)\Gamma\left(\frac{\lambda\rho_\beta\Omega_0}{\widetilde{\mu}}\right)^2 \\
+    &\le (1+s)^2\left(1 - 4s\right)R_t^2 \\
+    &\quad + (1+s)\left(1+\frac{1}{s}\right)\Gamma\left(\frac{\lambda\rho_\beta\Omega_0}{\widetilde{\mu}}\right)^2.
 \end{split}
 \end{equation*}
-В случае регуляризации $\ell_2$ можем записать третий член:
+Так как $s \le \frac14$, непосредственной проверкой убеждаемся, что $(1+s)^2(1-4s) \le 1-s$ и $(1+s)(1+1/s) \le 4/s$, поэтому
 \begin{equation*}
-\begin{split}
-    -2\eta \langle D_t \nabla r(w_t), w_t-w_*\rangle &= -2\lambda\eta \langle D_t w_t, w_t-w_*\rangle \\
-    &= -2\lambda\eta \langle w_t - w_*, w_t-w_*\rangle_{D_t} - 2\lambda\eta \langle w_*, w_t-w_*\rangle_{D_t}\\
-    &= -2\eta\lambda||w_t-w_*||_{D_t}^2 - 2\lambda\eta\langle w_*\sqrt{D_t}, \sqrt{D_t}(w_t-w_*)\rangle \\
-    &\leq -2\eta \lambda ||w_t-w_*||_{D_t}^2 + \lambda\eta||w_*\sqrt{D_t}||_2^2 + \lambda\eta||w_t - w_*||_{D_t}^2 \\
-    &\leq -\eta\lambda||w_t-w_*||_{D_t}^2 + \frac{\lambda\eta\Omega_0^2}{\alpha}||D_t||_2^2.
-    \end{split}
+    R_{t+1}^2 \le (1 - s)\,R_t^2 + \frac{4\Gamma}{s}\left(\frac{\lambda\rho_\beta\Omega_0}{\widetilde{\mu}}\right)^2.
 \end{equation*}
-Здесь мы использовали, что \ref{ass:preconditioned}, $\alpha I \preccurlyeq D_t \preccurlyeq \Gamma I$ и $||w_*|||_2^2 \leq \Omega_0^2$. С помощью леммы \ref{lemma:existence} и $L$-гладкости \ref{ass:smoothness} функции $f$, $||\nabla f(w_t) - \nabla f(w_*)||_2^2 \leq 2L_f(f(w_t) - f(w_*))$:
+
+\textbf{Шаг 4: разворачивание рекурсии.}
+Стандартным образом для рекурсии $R_{t+1}^2 \le (1-s)R_t^2 + c$ получаем $R_T^2 \le (1-s)^T R_0^2 + \frac{c}{s}$, откуда
+\begin{equation*}
+    R_T^2 \le \left(1 - \frac{\eta\widetilde{\mu}}{4\Gamma}\right)^T R_0^2 + \frac{4\Gamma}{s^2}\left(\frac{\lambda\rho_\beta\Omega_0}{\widetilde{\mu}}\right)^2
+    = \left(1 - \frac{\eta\widetilde{\mu}}{4\Gamma}\right)^T R_0^2 + \frac{64\,\Gamma^3 \lambda^2 \Omega_0^2}{\eta^2 \widetilde{\mu}^4}\,\rho_\beta^2.
+\end{equation*}
+Наконец, если $\beta$ выбран так, что второе слагаемое не превосходит $\frac{\varepsilon}{2}$, то из $(1-s)^T \le e^{-sT}$ следует, что $R_T^2 \le \varepsilon$ при $T \ge \frac{1}{s}\log\frac{2R_0^2}{\varepsilon} = \frac{4\Gamma}{\eta\widetilde{\mu}}\log\frac{2R_0^2}{\varepsilon}$.
+\end{proof}
+
+\begin{proof}[Доказательство теоремы \ref{theor:3}]
+Шаг метода: $w_{t+1} = w_t - \eta D_t^{-1}\widehat{g}_t$, где $\widehat{g}_t = g_t + D_t \nabla r(w_t)$. Обозначим $\mathbb{E}_t[\,\cdot\,] := \mathbb{E}[\,\cdot \mid \mathcal{F}_t]$. По предположению \ref{ass:expectations} величины $w_t$ и $D_t$ $\mathcal{F}_t$-измеримы, поэтому
+$$\mathbb{E}_t[\widehat{g}_t] = \nabla \widetilde{F}_t(w_t), \qquad \mathbb{E}_t\|\widehat{g}_t - \nabla \widetilde{F}_t(w_t)\|^2 \le \sigma^2.$$
+По лемме \ref{lemma:tildesmoothness} функция $\widetilde{F}_t$ является $\widetilde{L}$-гладкой, поэтому по \eqref{eq:descent_lemma}
+\begin{equation*}
+    \widetilde{F}_t(w_{t+1}) \le \widetilde{F}_t(w_t) - \eta \langle \nabla \widetilde{F}_t(w_t), D_t^{-1}\widehat{g}_t \rangle + \frac{\widetilde{L}\eta^2}{2}\|D_t^{-1}\widehat{g}_t\|^2.
+\end{equation*}
+Возьмём условное ожидание $\mathbb{E}_t$. Для линейного члена, используя несмещённость и \ref{ass:preconditioned},
+\begin{equation*}
+    \mathbb{E}_t \langle \nabla \widetilde{F}_t(w_t), D_t^{-1}\widehat{g}_t \rangle = \langle \nabla \widetilde{F}_t(w_t), D_t^{-1}\nabla \widetilde{F}_t(w_t) \rangle \ge \frac{1}{\Gamma}\|\nabla \widetilde{F}_t(w_t)\|^2.
+\end{equation*}
+Для квадратичного члена, используя $\|D_t^{-1}x\| \le \frac{1}{\alpha}\|x\|$ и разложение дисперсии $\mathbb{E}_t\|\widehat{g}_t\|^2 = \|\nabla \widetilde{F}_t(w_t)\|^2 + \mathbb{E}_t\|\widehat{g}_t - \nabla \widetilde{F}_t(w_t)\|^2$,
+\begin{equation*}
+    \mathbb{E}_t\|D_t^{-1}\widehat{g}_t\|^2 \le \frac{1}{\alpha^2}\left(\|\nabla \widetilde{F}_t(w_t)\|^2 + \sigma^2\right).
+\end{equation*}
+Итого
 \begin{equation*}
 \begin{split}
-    \eta^2 ||\nabla f(w_t) + D_t \nabla r(w_t)||_{D_t^{-1}}^2 &\leq 2\eta^2 ||\nabla f(w_t) - \nabla f(w^*) ||_{D_t^{-1}}^2 + 4\eta^2 ||\nabla r(w_t) \\
-    & \quad  - \nabla r(w_*) ||_{D_t}^2 + 4\eta^2||\nabla r(w_*)||_{D_t}^2 \\
-    &\leq 4\eta^2\lambda^2 ||w_t - w_*||_{D_t}^2 + \frac{4\eta^2L_f}{\alpha} \left(f(w_t)-f(w_*)\right) \\
-    & \quad + 4\eta^2\lambda^2\Omega_0^2||D_t||_2 \\
-    & \leq 4\eta^2\lambda^2 ||w_t - w_*||_{D_t}^2 + \frac{4\eta^2L_f}{\alpha} \left(f(w_t)-f(w_*)\right) \\
-    & \quad + 4\eta^2 \frac{\lambda^2\Omega_0^2}{\alpha} ||D_t||_2^2.
+    \mathbb{E}_t\left[\widetilde{F}_t(w_{t+1})\right] &\le \widetilde{F}_t(w_t) - \left(\frac{\eta}{\Gamma} - \frac{\widetilde{L}\eta^2}{2\alpha^2}\right) \|\nabla \widetilde{F}_t(w_t)\|^2 + \frac{\widetilde{L}\eta^2\sigma^2}{2\alpha^2} \\
+    &\le \widetilde{F}_t(w_t) - \frac{\eta}{2\Gamma} \|\nabla \widetilde{F}_t(w_t)\|^2 + \frac{\widetilde{L}\eta^2\sigma^2}{2\alpha^2},
 \end{split}
 \end{equation*}
-Наконец, используя дополнительные обозначения для $R_{t+1}^2 = ||w_{t+1} - w_*||_{D_{t}}^2$ и леммы \ref{lemma:Dt} об изменении $D_t$, мы получаем:
+где в последнем переходе использовано условие $\eta \le \frac{\alpha^2}{\Gamma\widetilde{L}}$, дающее $\frac{\widetilde{L}\eta^2}{2\alpha^2} \le \frac{\eta}{2\Gamma}$.
+Дрейф функции $\widetilde{F}_t$ по $t$ оценивается в точности как в доказательстве теоремы \ref{theor:1} (неравенство \eqref{eq:Ft+1-Ft} выполняется с вероятностью 1): $\widetilde{F}_{t+1}(w_{t+1}) \le \widetilde{F}_t(w_{t+1}) + \delta$. Беря полное математическое ожидание и складывая, получаем
+\begin{equation*}
+    \mathbb{E}\left[\widetilde{F}_{t+1}(w_{t+1})\right] \le \mathbb{E}\left[\widetilde{F}_t(w_t)\right] - \frac{\eta}{2\Gamma} \mathbb{E}\|\nabla \widetilde{F}_t(w_t)\|^2 + \frac{\widetilde{L}\eta^2\sigma^2}{2\alpha^2} + \delta.
+\end{equation*}
+Суммируя по $t = 0, \ldots, T$ и используя, как в доказательстве теоремы \ref{theor:1}, оценку $\mathbb{E}[\widetilde{F}_{T+1}(w_{T+1})] \ge f^*$, получаем
+\begin{equation*}
+    \frac{\eta}{2\Gamma} \sum_{t=0}^{T} \mathbb{E}\|\nabla \widetilde{F}_t(w_t)\|^2 \le \Delta_0 + (T+1)\left(\frac{\widetilde{L}\eta^2\sigma^2}{2\alpha^2} + \delta\right),
+\end{equation*}
+откуда, заменяя минимум средним,
 \begin{equation*}
 \begin{split}
-    R_{t+1}^2 &\leq \left(1 - \eta\mu_f - \eta\lambda+4\eta^2\lambda^2 \right)\left(1+\frac{(1-\beta)\Gamma^2}{2\alpha}\right)R_t^2 + \left( \frac{4\eta^2\lambda^2\Omega_0^2}{\alpha} + \frac{\lambda\eta\Omega_0^2}{\alpha}\right) \sigma_t^2 \\
-    & + \left(\frac{4\eta^2L_f}{\alpha} - 2\eta\right) \left(f(w_t) - f(w_*) \right).
+    \min_{0 \le t \le T} \mathbb{E}\|\nabla \widetilde{F}_t(w_t)\|^2 &\le \frac{1}{T+1}\sum_{t=0}^{T} \mathbb{E}\|\nabla \widetilde{F}_t(w_t)\|^2 \\
+    &\le \frac{2\Gamma\Delta_0}{\eta(T+1)} + \frac{\Gamma\widetilde{L}\eta\sigma^2}{\alpha^2} + \frac{2\Gamma\delta}{\eta}.
 \end{split}
 \end{equation*}
+\end{proof}
+
+\begin{proof}[Доказательство теоремы \ref{theor:4}]
+Доказательство повторяет схему теоремы \ref{theor:2} с учётом стохастичности градиента. Шаги 0 и 2 (свойства $\widetilde{F}_t$, оценка $\|\widetilde{w}^*_t\| \le \Omega_0$ и дрейф \eqref{eq:drift}) не зависят от способа вычисления градиента и переносятся без изменений.
+
+\textbf{Сжатие за один шаг.} Шаг метода: $w_{t+1} = w_t - \eta D_t^{-1}\widehat{g}_t$; как и в доказательстве теоремы \ref{theor:3}, при $\mathbb{E}_t[\,\cdot\,] = \mathbb{E}[\,\cdot \mid \mathcal{F}_t]$ имеем $\mathbb{E}_t[\widehat{g}_t] = \nabla \widetilde{F}_t(w_t)$ и $\mathbb{E}_t\|\widehat{g}_t - \nabla\widetilde{F}_t(w_t)\|^2 \le \sigma^2$. Тогда
 \begin{equation*}
-    \sigma_{t+1}^2 \leq \beta \sigma_{t}^2 + 2\frac{1-\beta}{\beta^2}L_f (f(w_t) - f(w_*)).
+    \mathbb{E}_t\|w_{t+1}-\widetilde{w}^*_t\|_{D_t}^2 = \|w_t - \widetilde{w}^*_t\|_{D_t}^2 - 2 \eta \langle \nabla\widetilde{F}_t(w_t), w_t - \widetilde{w}^*_t \rangle + \eta^2\, \mathbb{E}_t\|\widehat{g}_t\|_{D_t^{-1}}^2,
 \end{equation*}
-\begin{equation*}
-\begin{split}
-    R_{t+1}^2 + M\sigma_{t+1}^2 &\leq  \left(1 - \eta\mu_f - \eta\lambda + 4\eta^2\lambda^2 \right)\left(1+\frac{(1-\beta)\Gamma^2}{2\alpha}\right)R_t^2 \\
-    & \quad + \left( \frac{4\eta^2\lambda^2\Omega_0^2}{\alpha} + \frac{\lambda\eta\Omega_0^2}{\alpha} + M\beta\right) \sigma_t^2 \\
-    & \quad + \left( \frac{4\eta^2L_f}{\alpha} + 2M\frac{1-\beta}{\beta^2}L_f - 2\eta\right) \left(f(w_t) - f(w_*) \right).
-    \end{split}
-\end{equation*}
-Напишем ограничения на шаг алгоритма, то есть на  $\eta$: 
-$$\beta \geq 1 - \frac{\eta(\mu_f+\lambda)\alpha}{2\Gamma^2},$$ 
-$$\eta \leq \frac{\mu_f + \lambda}{8 \lambda^2}$$
+где мы использовали $\langle D_t^{-1}\widehat{g}_t, w_t - \widetilde{w}^*_t\rangle_{D_t} = \langle \widehat{g}_t, w_t - \widetilde{w}^*_t\rangle$ и условную несмещённость $\widehat{g}_t$. Как и в теореме \ref{theor:2},
+$\langle \nabla\widetilde{F}_t(w_t), w_t - \widetilde{w}^*_t \rangle \ge \frac{\widetilde{\mu}}{\Gamma}\|w_t - \widetilde{w}^*_t\|^2_{D_t}$, а для квадратичного члена
 \begin{equation*}
 \begin{split}
-    \left(1 - \eta\mu_f - \eta\lambda + 4\eta^2\lambda^2 \right)\left(1+\frac{(1-\beta)\Gamma^2}{2\alpha}\right) &\leq \left(1 - \eta \frac{\mu_f+\lambda}{2}\right) \left(1 + (1-\beta) \frac{\Gamma^2}{2\alpha} \right) \\
-     &\leq \left(1 - \eta \frac{\mu_f+\lambda}{2}\right) \left(1 + \eta\frac{\mu_f + \lambda}{4} \right) \\
-     & = 1 + \eta \frac{\mu_f + \lambda}{4} - \eta \frac{\mu_f + \lambda}{2} - \eta^2 \frac{(\mu_f+\lambda)^2}{8} \\
-     & = 1 - \eta \frac{\mu_f + \lambda}{4} - \eta^2 \frac{(\mu_f + \lambda)^2}{8} \\
-     & < 1 - \eta \frac{\mu_f + \lambda}{4}.
-    \end{split}
+    \mathbb{E}_t\|\widehat{g}_t\|_{D_t^{-1}}^2 \le \frac{1}{\alpha}\mathbb{E}_t\|\widehat{g}_t\|^2 &= \frac{1}{\alpha}\left(\|\nabla\widetilde{F}_t(w_t)\|^2 + \mathbb{E}_t\|\widehat{g}_t - \nabla\widetilde{F}_t(w_t)\|^2\right) \\
+    &\le \frac{\widetilde{L}^2}{\alpha^2}\|w_t - \widetilde{w}^*_t\|_{D_t}^2 + \frac{\sigma^2}{\alpha}.
+\end{split}
 \end{equation*}
-Запишем ограничения на второй множитель выражения, причем ещё ограничение на шаг обучения  $\eta < \frac{1}{4\lambda}$:
+При $\eta \le \frac{\widetilde{\mu}\alpha^2}{\Gamma\widetilde{L}^2}$ получаем
 \begin{equation*}
-    \left( \frac{4\eta^2\lambda^2\Omega_0^2}{\alpha} + \frac{\lambda\eta\Omega_0^2}{\alpha} + M\beta\right) \leq \frac{2\lambda\eta\Omega_0^2}{\alpha} + M\beta = \left(\frac{1+\beta}{2} \right)M.
+    \mathbb{E}_t\|w_{t+1}-\widetilde{w}^*_t\|_{D_t}^2 \le \left(1 - \frac{\eta\widetilde{\mu}}{\Gamma}\right)\|w_t - \widetilde{w}^*_t\|_{D_t}^2 + \frac{\eta^2\sigma^2}{\alpha}.
 \end{equation*}
+
+\textbf{Рекурсия и итог.} Обозначая $s = \frac{\eta\widetilde{\mu}}{4\Gamma} \le \frac14$ и повторяя шаг 3 теоремы \ref{theor:2} (смена нормы и дрейф цели; шумовой член при этом умножается на $(1+s)^2 \le 2$), получаем
 \begin{equation*}
-    M = \frac{4\eta \lambda \Omega_0^2}{\alpha(1-\beta)}.
+    \mathbb{E}\left[R_{t+1}^2\right] \le (1-s)\,\mathbb{E}\left[R_t^2\right] + \frac{2\eta^2\sigma^2}{\alpha} + \frac{4\Gamma}{s}\left(\frac{\lambda\rho_\beta\Omega_0}{\widetilde{\mu}}\right)^2.
 \end{equation*}
-Запишем ограничения на третий множитель:
-\begin{equation*}
-    2\eta^2 \frac{L_f}{\alpha} - \eta + \frac{1-\beta}{\beta^2}L_fM = 2\eta^2 \frac{L_f}{\alpha} - \eta + \frac{1-\beta}{\beta^2}L_f \frac{4\eta \lambda \Omega_0^2}{\alpha(1-\beta)} \leq 0.
-\end{equation*}
-Поделим обе части на $\eta$:
-\begin{equation*}
-    2\eta \frac{L_f}{\alpha} - 1 + \frac{1-\beta}{\beta^2}L_f \frac{4 \lambda \Omega_0^2}{\alpha(1-\beta)} \leq 0.
-\end{equation*}
-С ограничениями на $\lambda:$ 
-\begin{equation*}
-\lambda \leq \frac{\alpha \beta^2}{8L_f\Omega_0^2},
-\end{equation*}
-получили, что
-\begin{equation*}
-    \eta < \frac{\alpha}{4 L_f} \leq \frac{\alpha}{2L_f} \left(1 - \frac{4L_f\lambda\Omega_0^2}{\alpha\beta^2} \right).
-\end{equation*}
-Наконец, мы можем запустить рекурсию:
+Разворачивая рекурсию ($R_T^2 \le (1-s)^TR_0^2 + \frac{c}{s}$ для $R_{t+1}^2 \le (1-s)R_t^2 + c$), получаем
 \begin{equation*}
 \begin{split}
-    R_{T+1}^2 + M \sigma_{T+1}^2 & \leq \left(1-\eta\frac{\mu_f+\lambda}{4} \right) R_T^2 + \left(\frac{1+\beta}{2}\right) \cdot M \sigma_T^2 \\
-    & \leq \exp{\left(- \min \left\{\eta\frac{\mu_f + \lambda}{4}; -\log\left(\frac{1+\beta}{2} \right) \right\} \right)} \left( R_T^2 + M \sigma_T^2 \right) \\
-    & \leq \exp{\left(- \min \left\{\eta\frac{\mu_f + \lambda}{4};\eta\frac{(\mu_f + \lambda)\alpha}{2\Gamma^2}  \right\} \right)} \left( R_T^2 + M \sigma_T^2 \right) \\
-    &\leq \exp{\left(-T \eta\frac{\mu_f + \lambda}{4} \cdot \min \left\{1; \frac{2\alpha}{\Gamma^2} \right\} \right)}\left( R_0^2 + M\sigma_0^2 \right).
-    \end{split}
+    \mathbb{E}\left[R_T^2\right] &\le \left(1 - \frac{\eta\widetilde{\mu}}{4\Gamma}\right)^T R_0^2 + \frac{8\Gamma\eta\sigma^2}{\widetilde{\mu}\alpha} \\
+    &\quad + \frac{64\,\Gamma^3\lambda^2\Omega_0^2}{\eta^2\widetilde{\mu}^4}\,\rho_\beta^2.
+\end{split}
 \end{equation*}
-У нас есть список ограничений на гиперпараметры алгоритма:
-\begin{enumerate}
-    \item $\lambda < \frac{\alpha \beta^2}{8L_f \Omega_0^2}$.
-    \item $\eta \leq \frac{8\mu_f L_f^2 \Omega_0^4}{\alpha^2 \beta^4} + \frac{L_f \Omega_0^2}{\alpha \beta^2} < \frac{\mu_f + \lambda}{8\lambda^2}$.
-    \item $\eta < \frac{2L_f \Omega_0^2}{\alpha \beta^2} \leq \frac{1}{4\lambda}$.
-    \item $\beta \geq 1 - \frac{\eta(\mu_f + \lambda)\alpha}{2 \Gamma^2}$.
-    \item $\eta < \frac{\alpha}{4L_f}$.
-\end{enumerate}
-\begin{equation*}
-    \eta_{min} = \min \left\{ \frac{2L_f \Omega_0^2}{\alpha \beta^2}; \frac{\alpha}{4L_f}; \frac{8\mu_f L_f^2 \Omega_0^4}{\alpha^2 \beta^4} + \frac{L_f \Omega_0^2}{\alpha \beta^2} \right\}.
-\end{equation*}
-Получили оценку количества шагов, необходимых для достижения заданной точности
-\begin{equation*}
-T = \mathcal{O} \left(\log\left(\frac{R_0^2 + \frac{8\lambda \Omega_0^2 \Gamma^2}{\alpha^2(\mu_f+\lambda)} \sigma_0^2}{\varepsilon} \right) \frac{4}{\eta_{min} (\mu_f + \lambda)\cdot \min \left\{1; \frac{2\alpha}{\Gamma^2} \right\} } \right)    
-\end{equation*}
+Для достижения $\mathbb{E}[R_T^2] \le \varepsilon$ достаточно сделать каждое из трёх слагаемых не превосходящим $\frac{\varepsilon}{3}$: первое --- за $T \ge \frac{4\Gamma}{\eta\widetilde{\mu}}\log\frac{3R_0^2}{\varepsilon}$ итераций, второе --- выбором $\eta \le \frac{\varepsilon\widetilde{\mu}\alpha}{24\Gamma\sigma^2}$, третье --- выбором $\beta$, достаточно близкого к 1 (так как $\rho_\beta \to 0$ при $\beta \to 1$).
 \end{proof}

@@ -1,0 +1,93 @@
+{
+ "runs": [
+  {
+   "sigma": 0.1,
+   "eta": 0.001,
+   "ball_emp": 1.8710942372115714e-06,
+   "ball_theory_bound": 0.00030476190476190485,
+   "within_bound": true
+  },
+  {
+   "sigma": 0.1,
+   "eta": 0.003,
+   "ball_emp": 5.687068532417503e-06,
+   "ball_theory_bound": 0.0009142857142857145,
+   "within_bound": true
+  },
+  {
+   "sigma": 0.1,
+   "eta": 0.01,
+   "ball_emp": 1.9427653376450168e-05,
+   "ball_theory_bound": 0.003047619047619048,
+   "within_bound": true
+  },
+  {
+   "sigma": 0.1,
+   "eta": 0.03,
+   "ball_emp": 6.171088783969735e-05,
+   "ball_theory_bound": 0.009142857142857144,
+   "within_bound": true
+  },
+  {
+   "sigma": 0.3,
+   "eta": 0.001,
+   "ball_emp": 1.6839848134903826e-05,
+   "ball_theory_bound": 0.0027428571428571424,
+   "within_bound": true
+  },
+  {
+   "sigma": 0.3,
+   "eta": 0.003,
+   "ball_emp": 5.118361679175579e-05,
+   "ball_theory_bound": 0.008228571428571429,
+   "within_bound": true
+  },
+  {
+   "sigma": 0.3,
+   "eta": 0.01,
+   "ball_emp": 0.00017484888038805065,
+   "ball_theory_bound": 0.027428571428571427,
+   "within_bound": true
+  },
+  {
+   "sigma": 0.3,
+   "eta": 0.03,
+   "ball_emp": 0.0005553979905572767,
+   "ball_theory_bound": 0.08228571428571427,
+   "within_bound": true
+  },
+  {
+   "sigma": 1.0,
+   "eta": 0.001,
+   "ball_emp": 0.00018710942372114782,
+   "ball_theory_bound": 0.030476190476190476,
+   "within_bound": true
+  },
+  {
+   "sigma": 1.0,
+   "eta": 0.003,
+   "ball_emp": 0.0005687068532417307,
+   "ball_theory_bound": 0.09142857142857143,
+   "within_bound": true
+  },
+  {
+   "sigma": 1.0,
+   "eta": 0.01,
+   "ball_emp": 0.0019427653376450067,
+   "ball_theory_bound": 0.30476190476190473,
+   "within_bound": true
+  },
+  {
+   "sigma": 1.0,
+   "eta": 0.03,
+   "ball_emp": 0.006171088783969745,
+   "ball_theory_bound": 0.9142857142857143,
+   "within_bound": true
+  }
+ ],
+ "fits": {
+  "slope_vs_eta|sigma=0.1": 1.0270217740913374,
+  "slope_vs_eta|sigma=0.3": 1.0270217740913463,
+  "slope_vs_eta|sigma=1.0": 1.0270217740913545
+ }
+}
