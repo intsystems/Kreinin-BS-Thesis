@@ -59,11 +59,3 @@ cd code && python -m theory_bench.experiments a0 --device cuda:0
 
 Ноутбуки [code/notebooks/](code/notebooks/) рендерят все графики и таблицы диплома
 из сохранённых результатов (`theory_bench/results/`), GPU не требуется.
-
-Сборка PDF (docker, texlive):
-
-```bash
-cd docs/tex && docker run --rm -v "$PWD":/work -w /work -u $(id -u):$(id -g) \
-  -e TEXMFVAR=/tmp/texmf-var -e HOME=/tmp texlive/texlive:latest \
-  sh -c "mkdir -p /tmp/texmf-var && pdflatex main && bibtex main && pdflatex main && pdflatex main"
-```
